@@ -24,6 +24,8 @@ RUN wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/apor
     tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && \
     cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
     export CFLAGS=-static && export LDFLAGS=-static && \
+    sed -i APKBUILD -e 's/-DCMAKE_INSTALL_PREFIX=/-DWITH_CRYPTO=no -DCMAKE_INSTALL_PREFIX=/' && \
+    echo -e "prepare() {\n\tdefault_prepare\n\tsed -i CMakeLists.txt -e 's/PCAP_LIBRARIES/PCAP_STATIC_LIBRARIES/g'\n}" >> APKBUILD && \
     abuild -F fetch verify unpack prepare deps build package undeps && \
     "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/tcpdump" -h && \
     "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/tcpdump" -D && \
