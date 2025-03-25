@@ -15,17 +15,20 @@ ARG PACKAGE_PATH
 ARG PACKAGE_NAME
 ARG PACKAGE_VERSION
 
+# depends (3)
+#   so:libc.musl-x86_64.so.1
+#   so:libcrypto.so.3 => libcrypto.a provided by openssl-libs-static
+#   so:libpcap.so.1 => libpcap.a provided by libpcap-dev
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
     ln -s /var/cache/apk /etc/apk/cache && apk upgrade && apk add \
-    alpine-sdk
+    alpine-sdk openssl-libs-static
 
 WORKDIR /src
 RUN wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/v${ALPINE_VERSION}/aports-v${ALPINE_VERSION}.tar.gz?path=${PACKAGE_PATH}" && \
     tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && \
     cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
-    export CFLAGS=-static && export LDFLAGS=-static && \
-    sed -i APKBUILD -e 's/-DCMAKE_INSTALL_PREFIX=/-DWITH_CRYPTO=no -DCMAKE_INSTALL_PREFIX=/' && \
-    echo -e "prepare() {\n\tdefault_prepare\n\tsed -i CMakeLists.txt -e 's/PCAP_LIBRARIES/PCAP_STATIC_LIBRARIES/g'\n}" >> APKBUILD && \
+    export CFLAGS=-static && \
+    echo -e "prepare() {\n\tdefault_prepare\n\tsed -i CMakeLists.txt -e '/project(tcpdump C)/a set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)'\n}" >> APKBUILD && \
     abuild -F fetch verify unpack prepare deps build package undeps && \
     "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/tcpdump" -h && \
     "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/tcpdump" -D && \
