@@ -15,15 +15,20 @@ ARG PACKAGE_PATH
 ARG PACKAGE_NAME
 ARG PACKAGE_VERSION
 
+# depends (4)
+#   so:libc.musl-x86_64.so.1
+#   so:libcrypto.so.3 => libcrypto.a provided by openssl-libs-static
+#   so:libreadline.so.8 => libreadline.a provided by readline-static
+#   so:libssl.so.3 => libssl.a provided by openssl-libs-static
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
     ln -s /var/cache/apk /etc/apk/cache && apk upgrade && apk add \
-    alpine-sdk ncurses-static openssl-libs-static readline-static
+    alpine-sdk openssl-libs-static readline-static
 
 WORKDIR /src
 RUN wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/v${ALPINE_VERSION}/aports-v${ALPINE_VERSION}.tar.gz?path=${PACKAGE_PATH}" && \
     tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && \
     cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
-    export CFLAGS=-static && export LDFLAGS=-static && \
+    export CFLAGS=-static && \
     abuild -F fetch verify unpack prepare deps build package undeps && \
     "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/socat1" -h && \
     strip "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/socat1" -o /usr/local/bin/socat
