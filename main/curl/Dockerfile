@@ -43,11 +43,11 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 # https://gitlab.alpinelinux.org/alpine/aports/-/issues/16622
 # c-ares-dev-1.34.3 contains libcares_static.a but not libcares.a, fixed in c-ares-dev-1.34.4
 WORKDIR /src
-RUN wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/v${ALPINE_VERSION}/aports-v${ALPINE_VERSION}.tar.gz?path=${PACKAGE_PATH}" && \
+RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
+    wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/v${ALPINE_VERSION}/aports-v${ALPINE_VERSION}.tar.gz?path=${PACKAGE_PATH}" && \
     tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && \
     cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
     ln -s libcares_static.a /usr/lib/libcares.a && \
-    export LDFLAGS='-static -all-static' && export PKG_CONFIG='pkg-config --static' && \
     sed -i APKBUILD -e 's|./configure|LDFLAGS=-static PKG_CONFIG="pkg-config --static" ./configure --disable-shared --with-brotli|' && \
     sed -i APKBUILD -e 's|make$|make LDFLAGS=-all-static|' && \
     abuild -F fetch verify unpack prepare deps build package undeps && \

@@ -24,11 +24,12 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
     alpine-sdk openssl-libs-static
 
 WORKDIR /src
-RUN wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/v${ALPINE_VERSION}/aports-v${ALPINE_VERSION}.tar.gz?path=${PACKAGE_PATH}" && \
+RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
+    wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/v${ALPINE_VERSION}/aports-v${ALPINE_VERSION}.tar.gz?path=${PACKAGE_PATH}" && \
     tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && \
     cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
     export CFLAGS=-static && \
-    echo -e "prepare() {\n\tdefault_prepare\n\tsed -i CMakeLists.txt -e '/project(tcpdump C)/a set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)'\n}" >> APKBUILD && \
+    sed -i APKBUILD -e '/^build()/i prepare() {\n\tdefault_prepare\n\tsed -i CMakeLists.txt -e "/^project(tcpdump C)/a set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)"\n}' && \
     abuild -F fetch verify unpack prepare deps build package undeps && \
     "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/tcpdump" -h && \
     "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/tcpdump" -D && \
