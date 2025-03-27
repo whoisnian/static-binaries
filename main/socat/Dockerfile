@@ -30,7 +30,7 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
     tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && \
     cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
     export CFLAGS=-static && \
-    abuild -F fetch verify unpack prepare deps build package undeps && \
+    abuild -F fetch verify unpack prepare mkusers deps build package undeps && \
     "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/socat1" -h && \
     strip "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/socat1" -o /usr/local/bin/socat
 

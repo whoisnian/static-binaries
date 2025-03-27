@@ -50,7 +50,7 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
     ln -s libcares_static.a /usr/lib/libcares.a && \
     sed -i APKBUILD -e 's|./configure|LDFLAGS=-static PKG_CONFIG="pkg-config --static" ./configure --disable-shared --with-brotli|' && \
     sed -i APKBUILD -e 's|make$|make LDFLAGS=-all-static|' && \
-    abuild -F fetch verify unpack prepare deps build package undeps && \
+    abuild -F fetch verify unpack prepare mkusers deps build package undeps && \
     "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/curl" -h && \
     strip "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/curl" -o /usr/local/bin/curl
  

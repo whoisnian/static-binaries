@@ -30,7 +30,7 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
     cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
     export CFLAGS=-static && \
     sed -i APKBUILD -e '/^build()/i prepare() {\n\tdefault_prepare\n\tsed -i CMakeLists.txt -e "/^project(tcpdump C)/a set(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)"\n}' && \
-    abuild -F fetch verify unpack prepare deps build package undeps && \
+    abuild -F fetch verify unpack prepare mkusers deps build package undeps && \
     "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/tcpdump" -h && \
     "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/tcpdump" -D && \
     strip "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/tcpdump" -o /usr/local/bin/tcpdump
