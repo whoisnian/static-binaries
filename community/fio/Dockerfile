@@ -55,3 +55,8 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 FROM scratch
 COPY --from=build /usr/local/bin/fio /
 ENTRYPOINT ["/fio"]
+
+########## CHANGES ##########
+# 20250403:
+#   * Enable static build via configure options
+#   * Output only fio executable

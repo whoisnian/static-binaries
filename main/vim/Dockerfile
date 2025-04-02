@@ -62,3 +62,10 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 FROM scratch
 COPY --from=build /usr/local/bin/vim /usr/local/bin/xxd /
 ENTRYPOINT ["/vim"]
+
+########## CHANGES ##########
+# 20250403:
+#   * Enable static build via CFLAGS and LDFLAGS
+#   * Disable Lua/Python3/Ruby interpreters
+#   * Remove gvim makedepends and gvim build
+#   * Output only vim and xxd executables

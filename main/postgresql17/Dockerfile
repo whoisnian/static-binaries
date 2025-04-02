@@ -83,5 +83,12 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 # STEP-4: export executable
 # https://docs.docker.com/reference/cli/docker/buildx/build/#local
 FROM scratch
-COPY --from=build /usr/local/bin/p* /
+COPY --from=build /usr/local/bin/psql /usr/local/bin/pg_dump /
 ENTRYPOINT ["/psql"]
+
+########## CHANGES ##########
+# 20250401:
+#   * Enable static build via LDFLAGS_EX
+#   * Disable server-side fetures build via configure options
+#   * Ignore install error for server_cmds not built
+#   * Build and output only psql and pg_dump executables

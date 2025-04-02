@@ -56,3 +56,8 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 FROM scratch
 COPY --from=build /usr/local/bin/ps /
 ENTRYPOINT ["/ps"]
+
+########## CHANGES ##########
+# 20250401:
+#   * Enable static build via configure options
+#   * Output only ps executable

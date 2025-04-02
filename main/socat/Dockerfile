@@ -55,3 +55,8 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 FROM scratch
 COPY --from=build /usr/local/bin/socat /
 ENTRYPOINT ["/socat"]
+
+########## CHANGES ##########
+# 20250325:
+#   * Enable static build via CFLAGS
+#   * Output only socat executable

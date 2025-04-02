@@ -53,3 +53,7 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 FROM scratch
 COPY --from=build /usr/local/bin/htop /
 ENTRYPOINT ["/htop"]
+
+########## CHANGES ##########
+# 20250326:
+#   * Enable static build via configure options

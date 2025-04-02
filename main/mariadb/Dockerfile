@@ -77,5 +77,12 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 # STEP-4: export executable
 # https://docs.docker.com/reference/cli/docker/buildx/build/#local
 FROM scratch
-COPY --from=build /usr/local/bin/mariadb* /
+COPY --from=build /usr/local/bin/mariadb /usr/local/bin/mariadb-dump /
 ENTRYPOINT ["/mariadb"]
+
+########## CHANGES ##########
+# 20250330:
+#   * Enable static build via LDFLAGS
+#   * Disable server and plugin build via cmake options
+#   * Ignore install error for components not built
+#   * Build and output only mariadb and mariadb-dump executables

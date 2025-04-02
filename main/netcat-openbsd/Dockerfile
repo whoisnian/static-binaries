@@ -53,3 +53,7 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 FROM scratch
 COPY --from=build /usr/local/bin/nc /
 ENTRYPOINT ["/nc"]
+
+########## CHANGES ##########
+# 20250324:
+#   * Enable static build via CFLAGS

@@ -63,3 +63,8 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 FROM scratch
 COPY --from=build /usr/local/bin/redis-cli /
 ENTRYPOINT ["/redis-cli"]
+
+########## CHANGES ##########
+# 20250329:
+#   * Enable static build via CFLAGS and LDFLAGS
+#   * Build and output only redis-cli executable

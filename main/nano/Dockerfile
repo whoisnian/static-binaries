@@ -53,3 +53,7 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 FROM scratch
 COPY --from=build /usr/local/bin/nano /
 ENTRYPOINT ["/nano"]
+
+########## CHANGES ##########
+# 20250402:
+#   * Enable static build via LDFLAGS

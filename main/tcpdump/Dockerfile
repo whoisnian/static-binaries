@@ -60,3 +60,7 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 FROM scratch
 COPY --from=build /usr/local/bin/tcpdump /
 ENTRYPOINT ["/tcpdump"]
+
+########## CHANGES ##########
+# 20250326:
+#   * Enable static build via CFLAGS and CMAKE_FIND_LIBRARY_SUFFIXES

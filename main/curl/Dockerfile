@@ -74,3 +74,8 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 FROM scratch
 COPY --from=build /usr/local/bin/curl /
 ENTRYPOINT ["/curl"]
+
+########## CHANGES ##########
+# 20250327:
+#   * Enable static build via LDFLAGS and PKG_CONFIG
+#   * Patch c-ares-dev-1.34.3(libcares_static.a) for static build
