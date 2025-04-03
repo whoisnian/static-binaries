@@ -1,10 +1,10 @@
 # syntax=docker.io/docker/dockerfile:1.14
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.21.3
+ARG ALPINE_VERSION=3.21
 ARG PACKAGE_PATH=main/mariadb
 ARG PACKAGE_NAME=mariadb
-ARG PACKAGE_VERSION=11.4.4
+ARG PACKAGE_VERSION=11.4.5
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -34,7 +34,7 @@ ARG EXTRA_DEPS="ncurses-static openssl-libs-static zlib-static"
 
 # STEP-1: install dependencies
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
-  wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/v${ALPINE_VERSION}/aports-v${ALPINE_VERSION}.tar.gz?path=${PACKAGE_PATH}" && \
+  wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/${ALPINE_VERSION}-stable/aports-${ALPINE_VERSION}-stable.tar.gz?path=${PACKAGE_PATH}" && \
   tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && cd "${PACKAGE_PATH}" && \
   grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
   abuild -F deps && apk add ${EXTRA_DEPS}
@@ -56,6 +56,7 @@ RUN --mount=type=cache,target=/var/cache/distfiles <<EOT
   sed -i APKBUILD -e '/^build()/i \
 prepare() {\
 	default_prepare\
+	sed -i cmake/ssl.cmake -e "/FIND_PACKAGE(OpenSSL)/i \\    SET(OPENSSL_USE_STATIC_LIBS TRUE)"\
 	sed -i client/CMakeLists.txt -e "/^MYSQL_ADD_EXECUTABLE(mariadb /,/)$/ {s|)$| COMPONENT ClientCompiled)|}"\
 	sed -i client/CMakeLists.txt -e "s|^MYSQL_ADD_EXECUTABLE(mariadb-dump [^)]\\+|& COMPONENT ClientCompiled|"\
 }'
@@ -82,7 +83,7 @@ ENTRYPOINT ["/mariadb"]
 
 ########## CHANGES ##########
 # 20250330:
-#   * Enable static build via LDFLAGS
+#   * Enable static build via LDFLAGS and OPENSSL_USE_STATIC_LIBS
 #   * Disable server and plugin build via cmake options
 #   * Ignore install error for components not built
 #   * Build and output only mariadb and mariadb-dump executables
