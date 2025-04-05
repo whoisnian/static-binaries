@@ -1,0 +1,67 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build-binaries:
+    runs-on: ${{ matrix.runner.label }}
+    strategy:
+      matrix:
+        runner:
+          - { arch: amd64, label: ubuntu-24.04 }
+          - { arch: arm64, label: ubuntu-24.04-arm }
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: docker build -o=dist community/fio
+      - run: docker build -o=dist community/redis
+      - run: docker build -o=dist main/7zip
+      - run: docker build -o=dist main/curl
+      - run: docker build -o=dist main/htop
+      - run: docker build -o=dist main/iperf3
+      - run: docker build -o=dist main/iproute2
+      - run: docker build -o=dist main/lsof
+      - run: docker build -o=dist main/mariadb
+      - run: docker build -o=dist main/nano
+      - run: docker build -o=dist main/netcat-openbsd
+      - run: docker build -o=dist main/nmap
+      - run: docker build -o=dist main/pigz
+      - run: docker build -o=dist main/postgresql17
+      - run: docker build -o=dist main/procps-ng
+      - run: docker build -o=dist main/rsync
+      - run: docker build -o=dist main/socat
+      - run: docker build -o=dist main/strace
+      - run: docker build -o=dist main/tcpdump
+      - run: docker build -o=dist main/vim
+      - run: docker build -o=dist main/wget
+
+      - run: |
+          for file in dist/*; do
+            mv "$file" "${file}_${GITHUB_REF_NAME}_linux_${{ matrix.runner.arch }}"
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: static-binaries-artifact-${{ matrix.runner.arch }}
+          path: dist/*
+          retention-days: 1
+          if-no-files-found: error
+
+  merge-binaries:
+    runs-on: ubuntu-24.04
+    needs: build-binaries
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: static-binaries-artifact-*
+          path: dist
+          merge-multiple: true
+
+      - run: cd dist && sha256sum * > SHA256SUMS
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
