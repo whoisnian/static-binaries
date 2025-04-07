@@ -59,6 +59,7 @@ prepare() {\
 	sed -i cmake/ssl.cmake -e "/FIND_PACKAGE(OpenSSL)/i \\    SET(OPENSSL_USE_STATIC_LIBS TRUE)"\
 	sed -i client/CMakeLists.txt -e "/^MYSQL_ADD_EXECUTABLE(mariadb /,/)$/ {s|)$| COMPONENT ClientCompiled)|}"\
 	sed -i client/CMakeLists.txt -e "s|^MYSQL_ADD_EXECUTABLE(mariadb-dump [^)]\\+|& COMPONENT ClientCompiled|"\
+	sed -i libmariadb/plugins/auth/CMakeLists.txt -e "s|DEFAULT DYNAMIC|DEFAULT STATIC|g"\
 }'
   abuild -F fetch verify unpack prepare mkusers build package
 EOT
@@ -82,6 +83,8 @@ COPY --from=build /usr/local/bin/mariadb /usr/local/bin/mariadb-dump /
 ENTRYPOINT ["/mariadb"]
 
 ########## CHANGES ##########
+# 20250408:
+#   * Statically link auth plugins like caching_sha2_password
 # 20250330:
 #   * Enable static build via LDFLAGS and OPENSSL_USE_STATIC_LIBS
 #   * Disable server and plugin build via cmake options
