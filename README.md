@@ -1,5 +1,6 @@
 # static-binaries
 [![Release Status](https://github.com/whoisnian/static-binaries/actions/workflows/release.yml/badge.svg)](https://github.com/whoisnian/static-binaries/actions/workflows/release.yml)
+[![Release Version](https://img.shields.io/github/v/release/whoisnian/static-binaries?label=version)](https://github.com/whoisnian/static-binaries/releases/latest)
 
 Build static binaries based on Alpine Linux packages.
 
@@ -32,6 +33,18 @@ Last build: `2025-04-07T16:13:46Z` with Alpine Linux `v3.21`
 | vim          | [main/vim](https://pkgs.alpinelinux.org/package/v3.21/main/x86_64/vim)                          | 9.1.1105  | [amd64](https://github.com/whoisnian/static-binaries/releases/download/v20250408.0/vim_v20250408.0_linux_amd64) / [arm64](https://github.com/whoisnian/static-binaries/releases/download/v20250408.0/vim_v20250408.0_linux_arm64)                   |
 | xxd          | [main/vim](https://pkgs.alpinelinux.org/package/v3.21/main/x86_64/xxd)                          | 9.1.1105  | [amd64](https://github.com/whoisnian/static-binaries/releases/download/v20250408.0/xxd_v20250408.0_linux_amd64) / [arm64](https://github.com/whoisnian/static-binaries/releases/download/v20250408.0/xxd_v20250408.0_linux_arm64)                   |
 | wget         | [main/wget](https://pkgs.alpinelinux.org/package/v3.21/main/x86_64/wget)                        | 1.25.0    | [amd64](https://github.com/whoisnian/static-binaries/releases/download/v20250408.0/wget_v20250408.0_linux_amd64) / [arm64](https://github.com/whoisnian/static-binaries/releases/download/v20250408.0/wget_v20250408.0_linux_arm64)                 |
+
+## Tested Linux
+| name       | arch    | kernel               | libc       |
+| ---------- | ------- | -------------------- | ---------- |
+| Arch Linux | x86_64  | 6.14.1-arch1-1       | glibc 2.41 |
+| Debian 12  | x86_64  | 6.1.0-32-cloud-amd64 | glibc 2.36 |
+| Debian 11  | aarch64 | 5.10.0-26-arm64      | glibc 2.31 |
+
+* name: `cat /etc/os-release`
+* arch: `uname --machine`
+* kernel: `uname --kernel-release`
+* libc: `ldd --version`
 
 ## Reference
 * [Creating an Alpine package](https://wiki.alpinelinux.org/wiki/Creating_an_Alpine_package)
