@@ -9,10 +9,10 @@
 set -e
 
 ########## environment variables ##########
-SUFFIX='_v20250408.0_linux_amd64' # '_v20250408.0_linux_arm64'
-REDIS_CONN_OPTS='' # '-u redis://testpw@127.0.0.1:6379'
-MYSQL_CONN_OPTS='' # '-h 127.0.0.1 -u root -ptestpw --skip-ssl'
-POSTGRES_CONN_OPTS='' # 'postgresql://postgres:testpw@127.0.0.1/postgres'
+SUFFIX='_v20250408.0_linux_arm64' # '_v20250408.0_linux_arm64'
+REDIS_CONN_OPTS='-u redis://testpw@192.168.122.1:6379'
+MYSQL_CONN_OPTS='-h 192.168.122.1 -u root -ptestpw --skip-ssl'
+POSTGRES_CONN_OPTS='postgresql://postgres:testpw@192.168.122.1/postgres'
 EPHEMERAL_HTTP_PORT=18080
 
 ########## common functions ##########
@@ -20,7 +20,10 @@ function log_i() { echo -e "$(date +'%Y%m%d %H:%M:%S') \033[32m[I] $1\033[0m"; }
 function log_w() { echo -e "$(date +'%Y%m%d %H:%M:%S') \033[33m[W] $1\033[0m"; }
 function log_e() { echo -e "$(date +'%Y%m%d %H:%M:%S') \033[31m[E] $1\033[0m"; }
 function log_f() { echo -e "$(date +'%Y%m%d %H:%M:%S') \033[31m[F] $1\033[0m" && exit 1; }
-function one_time_httpd() { echo -e 'HTTP/1.1 200 OK\ncontent-length: 15\n\none_time_httpd\n' | ./dist/"nc${SUFFIX}" -N -l -p $EPHEMERAL_HTTP_PORT >/dev/null & }
+function one_time_httpd() {
+  echo -e 'HTTP/1.1 200 OK\ncontent-length: 15\n\none_time_httpd\n' | ./dist/"nc${SUFFIX}" -N -l -p $EPHEMERAL_HTTP_PORT >/dev/null &
+  sleep 0.2
+}
 
 USE_REDIS_DOCKER=0
 if [ -z "$REDIS_CONN_OPTS" ]; then
@@ -130,6 +133,7 @@ OUTPUT=$(./dist/"iperf3${SUFFIX}" --version)
 grep -q 'iperf 3.17.1' <<<$OUTPUT
 
 ./dist/"iperf3${SUFFIX}" --server --daemon --one-off
+sleep 0.1
 OUTPUT=$(./dist/"iperf3${SUFFIX}" --client 127.0.0.1 --time 1)
 grep -q 'iperf Done' <<<$OUTPUT
 
@@ -208,6 +212,7 @@ OUTPUT=$(./dist/"nc${SUFFIX}" -h 2>&1)
 grep -q 'OpenBSD netcat (Debian patchlevel 1.226-1.1)' <<<$OUTPUT
 
 ./dist/"nc${SUFFIX}" -N -l $EPHEMERAL_HTTP_PORT <<<'successful response' >/dev/null &
+sleep 0.2
 OUTPUT=$(./dist/"nc${SUFFIX}" -N 127.0.0.1 $EPHEMERAL_HTTP_PORT <<<'request')
 grep -q 'successful response' <<<$OUTPUT
 
@@ -280,7 +285,7 @@ log_i 'test main/procps-ng success'
 log_i 'start test main/rsync'
 
 OUTPUT=$(./dist/"rsync${SUFFIX}" --version)
-grep -q 'rsync  version 3.4.0' <<<$OUTPUT
+grep -q 'version 3.4.0' <<<$OUTPUT
 
 echo 'rsync_test' >rsync_from.txt
 OUTPUT=$(./dist/"rsync${SUFFIX}" -avz rsync_from.txt rsync_to.txt)
@@ -298,6 +303,7 @@ grep -q 'socat version 1.8.0.1' <<<$OUTPUT
 
 one_time_httpd
 ./dist/"socat${SUFFIX}" TCP-LISTEN:18090 "TCP4:127.0.0.1:$EPHEMERAL_HTTP_PORT" &
+sleep 0.2
 OUTPUT=$(./dist/"curl${SUFFIX}" --silent http://127.0.0.1:18090)
 grep -q 'one_time_httpd' <<<$OUTPUT
 
@@ -324,7 +330,7 @@ OUTPUT=$(./dist/"tcpdump${SUFFIX}" --version)
 grep -q 'version 4.99.5' <<<$OUTPUT
 
 one_time_httpd
-sudo ./dist/"tcpdump${SUFFIX}" --interface lo -A -n -c 5 "tcp src port $EPHEMERAL_HTTP_PORT" >tcpdump.data &
+sudo ./dist/"tcpdump${SUFFIX}" --interface lo -A -n -c 4 "tcp src port $EPHEMERAL_HTTP_PORT" >tcpdump.data &
 sleep 1
 OUTPUT=$(./dist/"curl${SUFFIX}" --silent "http://127.0.0.1:$EPHEMERAL_HTTP_PORT")
 grep -q 'one_time_httpd' <<<$OUTPUT

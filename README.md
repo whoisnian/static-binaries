@@ -52,3 +52,75 @@ Last build: `2025-04-07T16:13:46Z` with Alpine Linux `v3.21`
 * [Arch build system repository](https://gitlab.archlinux.org/archlinux/packaging/packages)
 * [Debian packaging repository](https://salsa.debian.org/debian)
 * [Beyond Linux From Scratch Book](https://www.linuxfromscratch.org/blfs/view/stable-systemd/)
+
+## debian12 amd64
+Debian GNU/Linux 12 (bookworm)
+Linux zb2 6.1.0-32-cloud-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.129-1 (2025-03-06) x86_64 GNU/Linux
+ldd (Debian GLIBC 2.36-9+deb12u10) 2.36
+## debian11 amd64
+Debian GNU/Linux 11 (bullseye)
+Linux zb2 5.10.0-34-cloud-amd64 #1 SMP Debian 5.10.234-1 (2025-02-24) x86_64 GNU/Linux
+ldd (Debian GLIBC 2.31-13+deb11u11) 2.31
+## centos7 amd64
+CentOS Linux 7 (Core)
+Linux zb3 3.10.0-1160.80.1.el7.x86_64 #1 SMP Tue Nov 8 15:48:59 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+ldd (GNU libc) 2.17
+## rocky8 amd64
+Rocky Linux 8.10 (Green Obsidian)
+Linux zb2 4.18.0-553.el8_10.x86_64 #1 SMP Fri May 24 13:05:10 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux
+ldd (GNU libc) 2.28
+## ubuntu24 amd64
+Ubuntu 24.04.2 LTS
+Linux zb2 6.8.0-57-generic #59-Ubuntu SMP PREEMPT_DYNAMIC Sat Mar 15 17:40:59 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+ldd (Ubuntu GLIBC 2.39-0ubuntu8.4) 2.39
+## ubuntu22 amd64
+Ubuntu 22.04.5 LTS
+Linux zb2 5.15.0-135-generic #146-Ubuntu SMP Sat Feb 15 17:06:22 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+ldd (Ubuntu GLIBC 2.35-0ubuntu3.9) 2.35
+## ubuntu20 amd64
+Ubuntu 20.04.6 LTS
+Linux zb2 5.4.0-212-generic #232-Ubuntu SMP Sat Mar 15 15:34:35 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+ldd (Ubuntu GLIBC 2.31-0ubuntu9.17) 2.31
+## ubuntu18 amd64
+Ubuntu 18.04.6 LTS
+Linux zb2 4.15.0-212-generic #223-Ubuntu SMP Tue May 23 13:09:22 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+ldd (Ubuntu GLIBC 2.27-3ubuntu1.6) 2.27
+
+
+wget http://192.168.122.1:7637/api/download/test.sh
+wget http://192.168.122.1:7637/api/download/arm64.tar
+mkdir dist && tar -xvf arm64.tar -C dist && chmod +x test.sh
+
+## debian12 arm64
+Debian GNU/Linux 12 (bookworm)
+Linux t1 6.1.0-32-cloud-arm64 #1 SMP Debian 6.1.129-1 (2025-03-06) aarch64 GNU/Linux
+ldd (Debian GLIBC 2.36-9+deb12u10) 2.36
+## debian11 arm64
+Debian GNU/Linux 11 (bullseye)
+Linux t1 5.10.0-34-cloud-arm64 #1 SMP Debian 5.10.234-1 (2025-02-24) aarch64 GNU/Linux
+ldd (Debian GLIBC 2.31-13+deb11u11) 2.31
+
+## centos7 arm64
+CentOS Linux 7 (Core)
+Linux zb3 3.10.0-1160.80.1.el7.x86_64 #1 SMP Tue Nov 8 15:48:59 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+ldd (GNU libc) 2.17
+## rocky8 arm64
+Rocky Linux 8.10 (Green Obsidian)
+Linux zb2 4.18.0-553.el8_10.x86_64 #1 SMP Fri May 24 13:05:10 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux
+ldd (GNU libc) 2.28
+## ubuntu24 arm64
+Ubuntu 24.04.2 LTS
+Linux zb2 6.8.0-57-generic #59-Ubuntu SMP PREEMPT_DYNAMIC Sat Mar 15 17:40:59 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+ldd (Ubuntu GLIBC 2.39-0ubuntu8.4) 2.39
+## ubuntu22 arm64
+Ubuntu 22.04.5 LTS
+Linux zb2 5.15.0-135-generic #146-Ubuntu SMP Sat Feb 15 17:06:22 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+ldd (Ubuntu GLIBC 2.35-0ubuntu3.9) 2.35
+## ubuntu20 arm64
+Ubuntu 20.04.6 LTS
+Linux zb2 5.4.0-212-generic #232-Ubuntu SMP Sat Mar 15 15:34:35 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+ldd (Ubuntu GLIBC 2.31-0ubuntu9.17) 2.31
+## ubuntu18 arm64
+Ubuntu 18.04.6 LTS
+Linux zb2 4.15.0-212-generic #223-Ubuntu SMP Tue May 23 13:09:22 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+ldd (Ubuntu GLIBC 2.27-3ubuntu1.6) 2.27
