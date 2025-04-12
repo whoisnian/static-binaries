@@ -35,11 +35,27 @@ Last build: `2025-04-07T16:13:46Z` with Alpine Linux `v3.21`
 | wget         | [main/wget](https://pkgs.alpinelinux.org/package/v3.21/main/x86_64/wget)                        | 1.25.0    | [amd64](https://github.com/whoisnian/static-binaries/releases/download/v20250408.0/wget_v20250408.0_linux_amd64) / [arm64](https://github.com/whoisnian/static-binaries/releases/download/v20250408.0/wget_v20250408.0_linux_arm64)                 |
 
 ## Tested Linux
-| name       | arch    | kernel               | libc       |
-| ---------- | ------- | -------------------- | ---------- |
-| Arch Linux | x86_64  | 6.14.1-arch1-1       | glibc 2.41 |
-| Debian 12  | x86_64  | 6.1.0-32-cloud-amd64 | glibc 2.36 |
-| Debian 11  | aarch64 | 5.10.0-26-arm64      | glibc 2.31 |
+| name         | arch    | kernel                      | libc       |
+| ------------ | ------- | --------------------------- | ---------- |
+| Arch Linux   | x86_64  | 6.14.2-arch1-1              | glibc 2.41 |
+| Debian 12    | x86_64  | 6.1.0-32-cloud-amd64        | glibc 2.36 |
+| Debian 11    | x86_64  | 5.10.0-34-cloud-amd64       | glibc 2.31 |
+| Ubuntu 24.04 | x86_64  | 6.8.0-57-generic            | glibc 2.39 |
+| Ubuntu 22.04 | x86_64  | 5.15.0-135-generic          | glibc 2.35 |
+| Ubuntu 20.04 | x86_64  | 5.4.0-212-generic           | glibc 2.31 |
+| Ubuntu 18.04 | x86_64  | 4.15.0-212-generic          | glibc 2.27 |
+| Alpine 3.21  | x86_64  | 6.12.8-0-virt               | musl 1.2.5 |
+| CentOS 7     | x86_64  | 3.10.0-1160.80.1.el7.x86_64 | glibc 2.17 |
+| Rocky 8.10   | x86_64  | 4.18.0-553.el8_10.x86_64    | glibc 2.28 |
+| Debian 12    | aarch64 | 6.1.0-32-cloud-arm64        | glibc 2.36 |
+| Debian 11    | aarch64 | 5.10.0-34-cloud-arm64       | glibc 2.31 |
+| Ubuntu 24.04 | aarch64 | 6.8.0-57-generic            | glibc 2.39 |
+| Ubuntu 22.04 | aarch64 | 5.15.0-135-generic          | glibc 2.35 |
+| Ubuntu 20.04 | aarch64 | 5.4.0-212-generic           | glibc 2.31 |
+| Ubuntu 18.04 | aarch64 | 4.15.0-212-generic          | glibc 2.27 |
+| Alpine 3.21  | aarch64 | 6.12.8-0-virt               | musl 1.2.5 |
+| CentOS 7     | aarch64 | 4.18.0-348.20.1.el7.aarch64 | glibc 2.17 |
+| Rocky 8.10   | aarch64 | 4.18.0-553.el8_10.aarch64   | glibc 2.28 |
 
 * name: `cat /etc/os-release`
 * arch: `uname --machine`
