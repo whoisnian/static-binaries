@@ -1,0 +1,63 @@
+# https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mysql80
+# https://gitlab.alpinelinux.org/alpine/aports/-/blob/3.21-stable/main/mariadb/APKBUILD
+pkgname=mysql80
+_pkgname=mysql
+pkgver=8.0.42
+pkgrel=0
+pkgdesc="Fast SQL database server, community edition, v8.0"
+url="https://www.mysql.com/products/community/"
+pkgusers="mysql"
+pkggroups="mysql"
+arch="x86_64 aarch64"
+license="GPL-2.0-only"
+# _boost_ver=1.77.0
+makedepends="perl bison cmake libaio-dev libtirpc-dev ncurses-dev openssl-dev zlib-dev zstd-dev ncurses-static openssl-libs-static zlib-static zstd-static"
+source="https://dev.mysql.com/get/Downloads/MySQL-8.0/$_pkgname-boost-$pkgver.tar.gz"
+builddir="$srcdir/$_pkgname-$pkgver"
+
+prepare() {
+	default_prepare
+	sed -i CMakeLists.txt -e '/^PROJECT(/,/)$/ {s|)$|)\nset(CMAKE_FIND_LIBRARY_SUFFIXES .a .so)|}'
+	sed -i client/CMakeLists.txt -e '/^MYSQL_ADD_EXECUTABLE(mysql$/,/)$/ {s|)$|COMPONENT ClientCompiled)|}'
+	sed -i client/CMakeLists.txt -e '/^MYSQL_ADD_EXECUTABLE(mysqldump$/,/)$/ {s|)$|COMPONENT ClientCompiled)|}'
+}
+
+build() {
+	LDFLAGS=-static cmake -B ../build \
+		-DBUILD_CONFIG=mysql_release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCOMPILATION_COMMENT="Alpine Linux" \
+		-DSYSCONFDIR=/etc/mysql \
+		-DMYSQL_DATADIR=/var/lib/mysql \
+		-DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock \
+		-DDEFAULT_CHARSET=utf8mb4 \
+		-DDEFAULT_COLLATION=utf8mb4_general_ci \
+		-DENABLED_LOCAL_INFILE=ON \
+		-DINSTALL_INFODIR=share/info \
+		-DINSTALL_MANDIR=share/man \
+		-DINSTALL_PLUGINDIR=lib/mysql/plugin \
+		-DINSTALL_INCLUDEDIR=include/mysql \
+		-DINSTALL_DOCREADMEDIR=share/doc/mysql \
+		-DINSTALL_SUPPORTFILESDIR=share/mysql \
+		-DINSTALL_MYSQLSHAREDIR=share/mysql \
+		-DINSTALL_DOCDIR=share/doc/mysql \
+		-DINSTALL_SHAREDIR=share/mysql \
+		-DTMPDIR=/var/tmp \
+		-DWITH_ZLIB=system \
+		-DWITH_ZSTD=system \
+		-DWITH_SSL=system \
+		-DWITH_LIBWRAP=OFF \
+		-DWITH_ROUTER=OFF \
+		-DWITHOUT_SERVER=ON \
+		-DWITH_UNIT_TESTS=OFF \
+		-DWITH_BOOST="boost"
+	cmake --build ../build --target mysql mysqldump
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --install ../build --component ClientCompiled
+}
+
+sha512sums="
+66776b5a1be603f215d4b227d395e72476bde76fdc0ba5ffdcfcb851a8261f1428c23c8abf1edca616765ee8254354e9092eaadde5ed43e7e2daa2ac265a0b23  mysql-boost-8.0.42.tar.gz
+"
