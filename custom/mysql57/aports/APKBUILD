@@ -1,0 +1,69 @@
+# https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mysql57
+# https://gitlab.alpinelinux.org/alpine/aports/-/blob/3.21-stable/main/mariadb/APKBUILD
+pkgname=mysql57
+_pkgname=mysql
+pkgver=5.7.44
+pkgrel=0
+pkgdesc="Fast SQL database server, community edition, v5.7"
+url="https://www.mysql.com/products/community/"
+pkgusers="mysql"
+pkggroups="mysql"
+arch="x86_64 aarch64"
+license="GPL"
+_boost_ver=1.59.0
+makedepends="bison cmake libaio-dev ncurses-dev openssl-dev zlib-dev ncurses-static openssl-libs-static zlib-static"
+source="https://dev.mysql.com/get/Downloads/MySQL-5.7/$_pkgname-$pkgver.tar.gz
+	https://archives.boost.io/release/$_boost_ver/source/boost_${_boost_ver//./_}.tar.gz
+	strerror.patch
+	"
+builddir="$srcdir/$_pkgname-$pkgver"
+
+prepare() {
+	default_prepare
+	sed -i client/CMakeLists.txt -e 's|^MYSQL_ADD_EXECUTABLE(mysql [^)]\+|& COMPONENT ClientCompiled|'
+	sed -i client/CMakeLists.txt -e 's|^MYSQL_ADD_EXECUTABLE(mysqldump [^)]\+|& COMPONENT ClientCompiled|'
+}
+
+build() {
+	LDFLAGS=-static cmake -B ../build \
+		-DBUILD_CONFIG=mysql_release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCOMPILATION_COMMENT="Alpine Linux" \
+		-DSYSCONFDIR=/etc/mysql \
+		-DMYSQL_DATADIR=/var/lib/mysql \
+		-DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock \
+		-DDEFAULT_CHARSET=utf8mb4 \
+		-DDEFAULT_COLLATION=utf8mb4_general_ci \
+		-DENABLED_LOCAL_INFILE=ON \
+		-DINSTALL_INFODIR=share/info \
+		-DINSTALL_MANDIR=share/man \
+		-DINSTALL_PLUGINDIR=lib/mysql/plugin \
+		-DINSTALL_SCRIPTDIR=bin \
+		-DINSTALL_INCLUDEDIR=include/mysql \
+		-DINSTALL_DOCREADMEDIR=share/doc/mysql \
+		-DINSTALL_SUPPORTFILESDIR=share/mysql \
+		-DINSTALL_MYSQLSHAREDIR=share/mysql \
+		-DINSTALL_DOCDIR=share/doc/mysql \
+		-DINSTALL_SHAREDIR=share/mysql \
+		-DTMPDIR=/var/tmp \
+		-DWITH_ZLIB=system \
+		-DWITH_SSL=system \
+		-DWITH_LIBWRAP=OFF \
+		-DWITH_EXTRA_CHARSETS=complex \
+		-DWITH_EMBEDDED_SERVER=OFF \
+		-DWITHOUT_SERVER=ON \
+		-DDISABLE_SHARED=ON \
+		-DWITH_UNIT_TESTS=OFF \
+		-DWITH_BOOST="../boost_${_boost_ver//./_}"
+	cmake --build ../build --target mysql mysqldump
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --install ../build --component ClientCompiled
+}
+
+sha512sums="
+10d725eaf817535bccdca689caf24b9cd510679aa7f82a86c4be31a4dd8ec78d24d5189e1ae24359bd409d1eac8eb240d333aeffa19b2c2d21277d1134ab269e  mysql-5.7.44.tar.gz
+05fdbe5637543defdbc630b921515425885593d16db14534ed7b9aa60925ade8fb598d50cb894aed6dae688e789047216daa1bf03fa1aeb6b531060d9dae52ae  boost_1_59_0.tar.gz
+478713a9763596965af4855f77db31d512ba8c8a1e8f906d0105f793fc93acc4b006cd38ed698ebd56b589ca7d3faeb05b9c733cf587a31390e0ff0849f7df7b  strerror.patch
+"
