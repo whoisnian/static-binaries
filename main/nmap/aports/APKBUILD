@@ -1,0 +1,98 @@
+# Maintainer: Leonardo Arena <rnalrd@alpinelinux.org>
+pkgname=nmap
+pkgver=7.97
+pkgrel=0
+pkgdesc="network exploration tool and security/port scanner"
+url="https://nmap.org"
+arch="all"
+license="custom"
+makedepends="
+	autoconf
+	automake
+	libtool
+	libpcap-dev
+	libssh2-dev
+	linux-headers
+	lua5.4-dev
+	openssl-dev
+	pcre-dev
+	zlib-dev
+	"
+subpackages="
+	$pkgname-doc
+	$pkgname-scripts::noarch
+	$pkgname-nselibs::noarch
+	$pkgname-nping
+	$pkgname-ncat
+	"
+options="net" # needed for test suite
+source="https://nmap.org/dist/nmap-$pkgver.tar.bz2
+	fortify-source.patch
+	0001-Fix-build-conflicting-types-for-strlcat.patch
+	"
+
+# secfixes:
+#   7.80-r0:
+#     - CVE-2017-18594
+#     - CVE-2018-15173
+
+prepare() {
+	default_prepare
+	update_config_sub
+
+	autoreconf libpcre libdnet-stripped -ivf
+}
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--infodir=/usr/share/info \
+		--without-zenmap \
+		--with-openssl=yes \
+		--with-libpcap=yes \
+		--with-libpcre=yes \
+		--with-libz=yes \
+		--with-libssh2=yes \
+		--with-liblua=/usr/lua5.4
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make -j1 DESTDIR="$pkgdir" install
+}
+
+scripts() {
+	depends="$pkgname-nselibs"
+	pkgdesc="$pkgdesc (scripts)"
+	amove usr/share/nmap/scripts
+}
+
+nselibs() {
+	pkgdesc="$pkgdesc (nselibs)"
+	amove usr/share/nmap/nse_main.lua
+	amove usr/share/nmap/nselib
+}
+
+ncat() {
+	pkgdesc="$pkgdesc (ncat tool)"
+	amove usr/bin/ncat
+}
+
+nping() {
+	pkgdesc="$pkgdesc (nping tool)"
+	amove usr/bin/nping
+}
+
+sha512sums="
+050241744c311f5fc16297e1698aded2a9fdc78eb7a0954d1c70f7713ef6e1b07f3fcbf28a6a53f43785b1ae710aadf10237d1d0bd8855c6b3c423da4d35961c  nmap-7.97.tar.bz2
+2d1f6e290723ac643f456a0e1ac95c4c966106cf2ab743839d25c835bf0141dc2d6bfee19285c3518d4c5f553b0505dabe5a496b769ba47b7adb03e791f05b8d  fortify-source.patch
+b25e8f70ed5351036822345a9d9cfc14cb7c7d0dd3e6f8db860cdf39fc147792b560b8e885cbbcf6347df327620150a80abeda0cbce3701a7acee7b80eebc953  0001-Fix-build-conflicting-types-for-strlcat.patch
+"
