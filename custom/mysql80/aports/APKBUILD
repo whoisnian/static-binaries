@@ -1,5 +1,5 @@
 # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mysql80
-# https://gitlab.alpinelinux.org/alpine/aports/-/blob/3.21-stable/main/mariadb/APKBUILD
+# https://gitlab.alpinelinux.org/alpine/aports/-/blob/3.22-stable/main/mariadb/APKBUILD
 pkgname=mysql80
 _pkgname=mysql
 pkgver=8.0.42
@@ -25,6 +25,7 @@ prepare() {
 build() {
 	LDFLAGS=-static cmake -B ../build \
 		-DBUILD_CONFIG=mysql_release \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCOMPILATION_COMMENT="Alpine Linux" \
 		-DSYSCONFDIR=/etc/mysql \

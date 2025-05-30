@@ -1,7 +1,7 @@
-# syntax=docker.io/docker/dockerfile:1.14
+# syntax=docker.io/docker/dockerfile:1.16
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.21
+ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=custom/mysql57
 ARG PACKAGE_NAME=mysql57
 ARG PACKAGE_VERSION=5.7.44
@@ -51,6 +51,8 @@ COPY --from=build /usr/local/bin/mysql57 /usr/local/bin/mysqldump57 /
 ENTRYPOINT ["/mysql57"]
 
 ########## CHANGES ##########
+# 20250531:
+#   * Upgrade alpine image to 3.22
 # 20250530:
 #   * Custom APKBUILD for MySQL 5.7.44
 #   * Enable static build via LDFLAGS and cmake options

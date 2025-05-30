@@ -1,7 +1,7 @@
-# syntax=docker.io/docker/dockerfile:1.14
+# syntax=docker.io/docker/dockerfile:1.16
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.21
+ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=custom/mysql84
 ARG PACKAGE_NAME=mysql84
 ARG PACKAGE_VERSION=8.4.5
@@ -51,6 +51,8 @@ COPY --from=build /usr/local/bin/mysql84 /usr/local/bin/mysqldump84 /
 ENTRYPOINT ["/mysql84"]
 
 ########## CHANGES ##########
+# 20250531:
+#   * Upgrade alpine image to 3.22
 # 20250530:
 #   * Custom APKBUILD for MySQL 8.4.5
 #   * Enable static build via LDFLAGS and CMAKE_FIND_LIBRARY_SUFFIXES
