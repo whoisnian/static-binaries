@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.14
+# syntax=docker.io/docker/dockerfile:1.16
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.21
+ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=community/redis
 ARG PACKAGE_NAME=redis
-ARG PACKAGE_VERSION=7.2.7
+ARG PACKAGE_VERSION=8.0.2
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -21,18 +21,18 @@ WORKDIR /src
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
   ln -s /var/cache/apk /etc/apk/cache && apk upgrade && apk add alpine-sdk
 
-# redis depends (4)
+# redis depends (5)
 #   /bin/sh
 #   so:libc.musl-x86_64.so.1
 #   so:libcrypto.so.3 => libcrypto.a provided by openssl-libs-static
 #   so:libssl.so.3 => libssl.a provided by openssl-libs-static
-ARG EXTRA_DEPS="openssl-libs-static"
+#   so:libstdc++.so.6 => libstdc++.a provided by libstdc++-dev
+ARG EXTRA_DEPS="openssl-libs-static libstdc++-dev"
 
 # STEP-1: install dependencies
+COPY aports "${PACKAGE_PATH}"
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
-  wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/${ALPINE_VERSION}-stable/aports-${ALPINE_VERSION}-stable.tar.gz?path=${PACKAGE_PATH}" && \
-  tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && cd "${PACKAGE_PATH}" && \
-  grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
+  cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
   abuild -F deps && apk add ${EXTRA_DEPS}
 
 # STEP-2: build executable
@@ -65,6 +65,9 @@ COPY --from=build /usr/local/bin/redis-cli /
 ENTRYPOINT ["/redis-cli"]
 
 ########## CHANGES ##########
+# 20250531:
+#   * Upgrade redis to 8.0.2
+#   * Commit APKBUILD to git for reproducible build
 # 20250329:
 #   * Enable static build via CFLAGS and LDFLAGS
 #   * Build and output only redis-cli executable
