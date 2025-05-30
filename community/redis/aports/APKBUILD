@@ -1,0 +1,125 @@
+# Contributor: V.Krishn <vkrishn4@gmail.com>
+# Contributor: Eivind Uggedal <eu@eju.no>
+# Contributor: TBK <alpine@jjtc.eu>
+# Maintainer: fossdd <fossdd@pwned.life>
+pkgname=redis
+pkgver=8.0.2
+pkgrel=0
+pkgdesc="Advanced key-value store"
+url="https://redis.io/"
+arch="all"
+license="AGPL-3.0-only OR SSPL-1.0"
+pkgusers="redis"
+pkggroups="redis"
+makedepends="linux-headers openssl-dev>3"
+checkdepends="tcl procps"
+install="$pkgname.pre-install $pkgname.post-install"
+subpackages="$pkgname-openrc"
+source="https://download.redis.io/releases/redis-$pkgver.tar.gz
+	redis.conf.patch
+	sentinel.conf.patch
+	$pkgname.initd
+	$pkgname.confd
+	$pkgname-sentinel.initd
+	$pkgname.logrotate
+	"
+options="!check" # very flaky
+
+# secfixes:
+#   8.0.2-r0:
+#     - CVE-2025-27151
+#   8.0.0-r0:
+#     - CVE-2025-21605
+#   7.2.7-r0:
+#     - CVE-2024-46981
+#     - CVE-2024-51741
+#   7.2.5-r1:
+#     - CVE-2024-31227
+#     - CVE-2024-31228
+#     - CVE-2024-31449
+#   7.2.4-r0:
+#     - CVE-2023-41056
+#   7.2.2-r0:
+#     - CVE-2023-45145
+#   7.2.1-r0:
+#     - CVE-2023-41053
+#   7.0.12-r0:
+#     - CVE-2022-24834
+#     - CVE-2023-36824
+#   7.0.8-r0:
+#     - CVE-2022-35977
+#     - CVE-2023-22458
+#   7.0.6-r0:
+#     - CVE-2022-3647
+#   7.0.5-r0:
+#     - CVE-2022-35951
+#   7.0.4-r0:
+#     - CVE-2022-31144
+#   6.2.7-r0:
+#     - CVE-2022-24735
+#     - CVE-2022-24736
+#   6.2.6-r0:
+#     - CVE-2021-32626
+#     - CVE-2021-32627
+#     - CVE-2021-32628
+#     - CVE-2021-32672
+#     - CVE-2021-32675
+#     - CVE-2021-32687
+#     - CVE-2021-32762
+#     - CVE-2021-41099
+#   6.2.5-r0:
+#     - CVE-2021-32761
+#   6.2.4-r0:
+#     - CVE-2021-32625
+#   6.2.0-r0:
+#     - CVE-2021-21309
+#     - CVE-2021-3470
+#   6.0.3-r0:
+#     - CVE-2020-14147
+#   5.0.8-r0:
+#     - CVE-2015-8080
+#   5.0.4-r0:
+#     - CVE-2019-10192
+#     - CVE-2019-10193
+
+build() {
+	export CFLAGS="$CFLAGS -DUSE_MALLOC_USABLE_SIZE -O2 -flto=auto"
+	make USE_JEMALLOC=no \
+		MALLOC=libc \
+		BUILD_TLS=yes \
+		all
+}
+
+check() {
+	make test
+}
+
+package() {
+	make install PREFIX=/usr INSTALL_BIN="$pkgdir/usr/bin"
+
+	cd "$pkgdir"
+
+	install -D -m 644 "$builddir"/redis.conf etc/redis.conf
+
+	# This file must be writable for redis, otherwise Sentinel fails to start.
+	install -D -m 644 -o redis -g redis "$builddir"/sentinel.conf etc/sentinel.conf
+
+	install -D -m 755 "$srcdir"/redis.initd etc/init.d/redis
+	install -D -m 755 "$srcdir"/redis-sentinel.initd etc/init.d/redis-sentinel
+	install -D -m 644 "$srcdir"/redis.confd etc/conf.d/redis
+	install -D -m 644 "$srcdir"/redis.logrotate etc/logrotate.d/redis
+
+	install -d -o redis -g redis \
+		var/lib/redis \
+		var/log/redis
+}
+
+sha512sums="
+827807ccde31b7c44b1c79fe583ecb578b0d8577b027ea0419fc5460f01f9b2385a456aa3a863fdb9b306fb2b9a45d428987b513a780d8916a53a2eee50bd248  redis-8.0.2.tar.gz
+7725486329f2aba8fe03a768f6d8ab78cc96ab6f2ca403af56c252ef7978f7628b580587b372969ca5dd6257780ef58571ce6dc5aca468c3b2a299033b41047f  redis.conf.patch
+a5dc411c2bd7edf61400e29accb375275dd888fda72a8f7e3889be475010c695a22f536be818ef9441e47285c00b451966db924362a7f56806586078c9e3ff8c  sentinel.conf.patch
+f6dcdad1edd6b5fb6aa28ba774bfc8aba035f316695da261fb2ad291b76f00f177479f9d74434d06c26bd15f131edc9a2f55c9880758cf0987800d2031069738  redis.initd
+6752e99df632b14d62a3266929e80c3d667be5c270e4f34e0dcf2b7f9b1754fe0ce9d4569fa413dbbe207e406ff2848a64e0c47629997536ae1d14ca84ebd56b  redis.confd
+e7a60a090df53eef05d58d73709f07536135a93efb34e48ad933e3859d3d1c0f476975a3232df18f57476bf7fc3b0548471e1c86445878457ac8507b3da71384  redis-sentinel.initd
+bf2def2077a989047e9bfff8a7f754bcdf96e020fd4a470f8967ee1fca601e11f044cfb3742f00e932cc013e0d0b199045d78c8878a0e529715c9f77786d353f  redis.logrotate
+"

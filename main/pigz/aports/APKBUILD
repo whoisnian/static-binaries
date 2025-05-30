@@ -1,0 +1,30 @@
+# Contributor: William Pitcock <nenolod@dereferenced.org>
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=pigz
+pkgver=2.8
+pkgrel=1
+pkgdesc="Parallel implementation of gzip"
+url="https://zlib.net/pigz/"
+arch="all"
+license="Zlib"
+makedepends="zlib-dev"
+subpackages="$pkgname-doc"
+source="https://zlib.net/pigz/pigz-$pkgver.tar.gz"
+
+build() {
+	make LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS -O3 -flto=auto" pigz
+}
+
+check() {
+	make test
+}
+
+package() {
+	install -Dm755 pigz -t "$pkgdir"/usr/bin
+	ln -s pigz "$pkgdir"/usr/bin/unpigz
+	install -Dm644 pigz.1 -t "$pkgdir"/usr/share/man/man1
+}
+
+sha512sums="
+ae3d9d593e1645d65f9ab77aa828600c9af4bb30d0a073da7ae3dd805e65b87efaf6a0efb980f2d0168e475ae506eba194547d6479956dabb9d88293a9078a7f  pigz-2.8.tar.gz
+"
