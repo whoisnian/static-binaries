@@ -1,7 +1,7 @@
-# syntax=docker.io/docker/dockerfile:1.14
+# syntax=docker.io/docker/dockerfile:1.16
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.21
+ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=main/wget
 ARG PACKAGE_NAME=wget
 ARG PACKAGE_VERSION=1.25.0
@@ -25,19 +25,18 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 #   so:libc.musl-x86_64.so.1
 #   so:libcrypto.so.3 => libcrypto.a provided by openssl-libs-static
 #   so:libidn2.so.0 => libidn2.a provided by libidn2-static
-#   so:libpcre2-8.so.0 => libpcre2-8.a provided by pcre2-dev
+#   so:libpcre2-8.so.0 => libpcre2-8.a provided by pcre2-static
 #   so:libssl.so.3 => libssl.a provided by openssl-libs-static
 #   so:libz.so.1 => libz.a provided by zlib-static
 # libidn2 depends (2)
 #   so:libc.musl-x86_64.so.1
 #   so:libunistring.so.5 => libunistring.a provided by libunistring-static
-ARG EXTRA_DEPS="libidn2-static libunistring-static openssl-libs-static zlib-static"
+ARG EXTRA_DEPS="libidn2-static libunistring-static openssl-libs-static pcre2-static zlib-static"
 
 # STEP-1: install dependencies
+COPY aports "${PACKAGE_PATH}"
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
-  wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/${ALPINE_VERSION}-stable/aports-${ALPINE_VERSION}-stable.tar.gz?path=${PACKAGE_PATH}" && \
-  tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && cd "${PACKAGE_PATH}" && \
-  grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
+  cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
   abuild -F deps && apk add ${EXTRA_DEPS}
 
 # STEP-2: build executable
@@ -62,5 +61,8 @@ COPY --from=build /usr/local/bin/wget /
 ENTRYPOINT ["/wget"]
 
 ########## CHANGES ##########
+# 20250531:
+#   * Upgrade alpine image to 3.22
+#   * Commit APKBUILD to git for reproducible build
 # 20250403:
 #   * Enable static build via LDFLAGS and PKG_CONFIG

@@ -1,0 +1,570 @@
+# Contributor: Sergei Lukin <sergej.lukin@gmail.com>
+# Contributor: Sören Tempel <soeren+alpine@soeren-tempel.net>
+# Contributor: Łukasz Jendrysik <scadu@yandex.com>
+# Contributor: Carlo Landmeter <clandmeter@alpinelinux.org>
+# Contributor: TBK <alpine@jjtc.eu>
+# Contributor: Marcel Haazen <marcel@haazen.xyz>
+# Contributor: Jake Buchholz <tomalok@gmail.com>
+# Maintainer: Natanael Copa <ncopa@alpinelinux.org>
+pkgname=mariadb
+pkgver=11.4.5
+pkgrel=2
+pkgdesc="A fast SQL database server"
+url="https://www.mariadb.org/"
+pkgusers="mysql"
+pkggroups="mysql"
+arch="all"
+license="GPL-2.0-or-later"
+depends="$pkgname-common"
+_mytopdeps="
+	perl
+	perl-dbd-mysql
+	perl-dbi
+	perl-getopt-long
+	perl-socket
+	perl-term-readkey
+	"
+depends_dev="
+	fmt-dev
+	mariadb-connector-c-dev
+	openssl-dev
+	zlib-dev
+	"
+makedepends="
+	$_mytopdeps
+	$depends_dev
+	bison
+	cmake
+	curl-dev
+	libaio-dev
+	libarchive-dev
+	libevent-dev
+	libxml2-dev~2.13
+	linux-headers
+	linux-pam-dev
+	ncurses-dev
+	pcre2-dev
+	readline-dev
+	samurai
+	xz-dev
+	zstd-dev
+	"
+install="$pkgname.pre-install $pkgname-common.post-upgrade"
+subpackages="
+	$pkgname-static
+	$pkgname-test:mytest
+	$pkgname-embedded-dev:_embedded_dev
+	$pkgname-doc
+	$pkgname-dev
+	$pkgname-common
+	$pkgname-openrc
+	$pkgname-client
+	$pkgname-client-perl:_client_perl:noarch
+	$pkgname-bench
+	$pkgname-backup
+	$pkgname-embedded
+	$pkgname-mytop
+	$pkgname-server-utils:_server_utils
+	mysql
+	mysql-client:_compat_client
+	mysql-bench:_compat_bench
+	"
+options="suid"
+
+case "$CARCH" in
+	x86|s390x) _enable_rocksdb=NO ;;
+	*)
+		_enable_rocksdb=YES
+		subpackages="$subpackages $pkgname-plugin-rocksdb:_plugin_rocksdb"
+		;;
+esac
+
+source="https://mirror.mariadb.org/mariadb-$pkgver/source/mariadb-$pkgver.tar.gz
+	$pkgname.initd
+	gcc13.patch
+	lfs64.patch
+	disable-failing-test.patch
+	have_stacktrace.patch
+	libfmt.patch
+	"
+
+# secfixes:
+#   11.4.5-r0:
+#     - CVE-2025-21490
+#   10.11.8-r0:
+#     - CVE-2024-21096
+#   10.11.6-r0:
+#     - CVE-2023-22084
+#   10.6.9-r0:
+#     - CVE-2018-25032
+#     - CVE-2022-32081
+#     - CVE-2022-32082
+#     - CVE-2022-32084
+#     - CVE-2022-32089
+#     - CVE-2022-32091
+#   10.6.8-r0:
+#     - CVE-2022-27376
+#     - CVE-2022-27377
+#     - CVE-2022-27378
+#     - CVE-2022-27379
+#     - CVE-2022-27380
+#     - CVE-2022-27381
+#     - CVE-2022-27382
+#     - CVE-2022-27383
+#     - CVE-2022-27384
+#     - CVE-2022-27386
+#     - CVE-2022-27387
+#     - CVE-2022-27444
+#     - CVE-2022-27445
+#     - CVE-2022-27446
+#     - CVE-2022-27447
+#     - CVE-2022-27448
+#     - CVE-2022-27449
+#     - CVE-2022-27451
+#     - CVE-2022-27452
+#     - CVE-2022-27455
+#     - CVE-2022-27456
+#     - CVE-2022-27457
+#     - CVE-2022-27458
+#   10.6.7-r0:
+#     - CVE-2021-46659
+#     - CVE-2021-46661
+#     - CVE-2021-46662
+#     - CVE-2021-46663
+#     - CVE-2021-46664
+#     - CVE-2021-46665
+#     - CVE-2021-46667
+#     - CVE-2021-46668
+#     - CVE-2022-24048
+#     - CVE-2022-24050
+#     - CVE-2022-24051
+#     - CVE-2022-24052
+#     - CVE-2022-27385
+#     - CVE-2022-31621
+#     - CVE-2022-31622
+#     - CVE-2022-31623
+#     - CVE-2022-31624
+#   10.6.4-r0:
+#     - CVE-2021-2372
+#     - CVE-2021-2389
+#   10.5.11-r0:
+#     - CVE-2021-2154
+#     - CVE-2021-2166
+#   10.5.9-r0:
+#     - CVE-2021-27928
+#   10.5.8-r0:
+#     - CVE-2020-14765
+#     - CVE-2020-14776
+#     - CVE-2020-14789
+#     - CVE-2020-14812
+#   10.5.6-r0:
+#     - CVE-2020-15180
+#   10.4.13-r0:
+#     - CVE-2020-2752
+#     - CVE-2020-2760
+#     - CVE-2020-2812
+#     - CVE-2020-2814
+#   10.4.12-r0:
+#     - CVE-2020-2574
+#   10.4.10-r0:
+#     - CVE-2019-2938
+#     - CVE-2019-2974
+#   10.4.7-r0:
+#     - CVE-2019-2805
+#     - CVE-2019-2740
+#     - CVE-2019-2739
+#     - CVE-2019-2737
+#     - CVE-2019-2758
+#   10.3.15-r0:
+#     - CVE-2019-2614
+#     - CVE-2019-2627
+#     - CVE-2019-2628
+#   10.3.13-r0:
+#     - CVE-2019-2510
+#     - CVE-2019-2537
+#   10.3.11-r0:
+#     - CVE-2018-3282
+#     - CVE-2016-9843
+#     - CVE-2018-3174
+#     - CVE-2018-3143
+#     - CVE-2018-3156
+#     - CVE-2018-3251
+#     - CVE-2018-3185
+#     - CVE-2018-3277
+#     - CVE-2018-3162
+#     - CVE-2018-3173
+#     - CVE-2018-3200
+#     - CVE-2018-3284
+#   10.2.15-r0:
+#     - CVE-2018-2786
+#     - CVE-2018-2759
+#     - CVE-2018-2777
+#     - CVE-2018-2810
+#     - CVE-2018-2782
+#     - CVE-2018-2784
+#     - CVE-2018-2787
+#     - CVE-2018-2766
+#     - CVE-2018-2755
+#     - CVE-2018-2819
+#     - CVE-2018-2817
+#     - CVE-2018-2761
+#     - CVE-2018-2781
+#     - CVE-2018-2771
+#     - CVE-2018-2813
+#   10.1.22-r0:
+#     - CVE-2017-3313
+#     - CVE-2017-3302
+#   10.1.21-r0:
+#     - CVE-2016-6664
+#     - CVE-2017-3238
+#     - CVE-2017-3243
+#     - CVE-2017-3244
+#     - CVE-2017-3257
+#     - CVE-2017-3258
+#     - CVE-2017-3265
+#     - CVE-2017-3291
+#     - CVE-2017-3312
+#     - CVE-2017-3317
+#     - CVE-2017-3318
+
+# Notes:
+# Available plugins https://mariadb.com/kb/en/library/list-of-plugins/
+# All cmake configuration options can be displayed with: cmake ../server -LH
+build() {
+	# set MinSizeRel as otherwise project enables debugging for some parts
+	cmake -B build -G Ninja -Wno-dev \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCOMPILATION_COMMENT="Alpine Linux" \
+		-DSYSCONFDIR=/etc \
+		-DSYSCONF2DIR=/etc/my.cnf.d \
+		-DMYSQL_DATADIR=/var/lib/mysql \
+		-DINSTALL_UNIX_ADDRDIR=/run/mysqld/mysqld.sock \
+		-DDEFAULT_CHARSET=utf8mb4 \
+		-DDEFAULT_COLLATION=utf8mb4_general_ci \
+		-DENABLED_LOCAL_INFILE=ON \
+		-DINSTALL_INFODIR=share/info \
+		-DINSTALL_MANDIR=share/man \
+		-DINSTALL_PAMDIR=lib/security \
+		-DINSTALL_PLUGINDIR=lib/$pkgname/plugin \
+		-DINSTALL_SCRIPTDIR=bin \
+		-DINSTALL_INCLUDEDIR=include/mysql \
+		-DINSTALL_DOCREADMEDIR=share/doc/$pkgname \
+		-DINSTALL_SUPPORTFILESDIR=share/$pkgname \
+		-DINSTALL_MYSQLSHAREDIR=share/$pkgname \
+		-DINSTALL_DOCDIR=share/doc/$pkgname \
+		-DTMPDIR=/var/tmp \
+		-DCONNECT_WITH_MYSQL=ON \
+		-DCONNECT_WITH_LIBXML2=system \
+		-DCONNECT_WITH_ODBC=NO \
+		-DCONNECT_WITH_JDBC=NO \
+		-DPLUGIN_ARCHIVE=YES \
+		-DPLUGIN_ARIA=YES \
+		-DPLUGIN_BLACKHOLE=YES \
+		-DPLUGIN_CASSANDRA=NO \
+		-DPLUGIN_CSV=YES \
+		-DPLUGIN_MYISAM=YES \
+		-DPLUGIN_MROONGA=NO \
+		-DPLUGIN_OQGRAPH=NO \
+		-DPLUGIN_PARTITION=STATIC \
+		-DPLUGIN_ROCKSDB=$_enable_rocksdb \
+		-DPLUGIN_SPHINX=NO \
+		-DPLUGIN_TOKUDB=NO \
+		-DPLUGIN_AUTH_GSSAPI=NO \
+		-DPLUGIN_AUTH_GSSAPI_CLIENT=OFF \
+		-DPLUGIN_CRACKLIB_PASSWORD_CHECK=NO \
+		-DWITH_ASAN=OFF \
+		-DWITH_EMBEDDED_SERVER=ON \
+		-DWITH_EXTRA_CHARSETS=complex \
+		-DWITH_INNODB_BZIP2=OFF \
+		-DWITH_INNODB_LZ4=OFF \
+		-DWITH_INNODB_LZMA=ON \
+		-DWITH_INNODB_LZO=OFF \
+		-DWITH_INNODB_SNAPPY=OFF \
+		-DWITH_ROCKSDB_BZIP2=OFF \
+		-DWITH_ROCKSDB_JEMALLOC=OFF \
+		-DWITH_ROCKSDB_LZ4=OFF \
+		-DWITH_ROCKSDB_ZSTD=ON \
+		-DWITH_ROCKSDB_SNAPPY=OFF \
+		-DWITH_JEMALLOC=NO \
+		-DWITH_LIBARCHIVE=system \
+		-DWITH_LIBFMT=system \
+		-DWITH_LIBNUMA=NO \
+		-DWITH_LIBWRAP=OFF \
+		-DWITH_LIBWSEP=OFF \
+		-DWITH_MARIABACKUP=ON \
+		-DWITH_PCRE=system \
+		-DWITH_READLINE=ON \
+		-DWITH_SYSTEMD=no \
+		-DWITH_SSL=system \
+		-DWITH_VALGRIND=OFF \
+		-DWITH_ZLIB=system \
+		-DSKIP_TESTS=ON # Disables the client lib tests since a running server is needed
+
+	cmake --build build
+}
+
+check() {
+	local disabled=
+	case "$CARCH" in
+		armv7) disabled="|aes" ;;
+	esac
+	# exclude test-connect which seems to be buggy. testsuite does not set port env var
+	ctest --test-dir build -E "(test-connect|my_tzinfo$disabled)"
+}
+
+package() {
+	DESTDIR="$pkgdir/" cmake --install build
+
+	install -Dm 755 "$srcdir"/$pkgname.initd \
+		"$pkgdir"/etc/init.d/$pkgname
+	mkdir -p "$pkgdir"/etc/my.cnf.d
+
+	# mariadb-test includes one executable that doesn't belong under
+	# /usr/share, so move it and provide a symlink
+	mv "$pkgdir"/usr/mariadb-test/lib/My/SafeProcess/my_safe_process \
+		"$pkgdir"/usr/bin
+	ln -s ../../../../bin/my_safe_process \
+		"$pkgdir"/usr/mariadb-test/lib/My/SafeProcess/my_safe_process
+
+	# remove files provided by mariadb-connector-c
+	rm \
+		"$pkgdir"/usr/bin/mariadb_config \
+		"$pkgdir"/usr/bin/mysql_config \
+		"$pkgdir"/usr/include/mysql/errmsg.h \
+		"$pkgdir"/usr/include/mysql/ma_list.h \
+		"$pkgdir"/usr/include/mysql/ma_pvio.h \
+		"$pkgdir"/usr/include/mysql/ma_tls.h \
+		"$pkgdir"/usr/include/mysql/mariadb/ma_io.h \
+		"$pkgdir"/usr/include/mysql/mariadb_com.h \
+		"$pkgdir"/usr/include/mysql/mariadb_ctype.h \
+		"$pkgdir"/usr/include/mysql/mariadb_dyncol.h \
+		"$pkgdir"/usr/include/mysql/mariadb_stmt.h \
+		"$pkgdir"/usr/include/mysql/mariadb_version.h \
+		"$pkgdir"/usr/include/mysql/mysql.h \
+		"$pkgdir"/usr/include/mysql/mysql/client_plugin.h \
+		"$pkgdir"/usr/include/mysql/mysql/plugin_auth.h \
+		"$pkgdir"/usr/include/mysql/mysql_version.h \
+		"$pkgdir"/usr/include/mysql/mysqld_error.h \
+		"$pkgdir"/usr/lib/$pkgname/plugin/dialog.so \
+		"$pkgdir"/usr/lib/$pkgname/plugin/mysql_clear_password.so \
+		"$pkgdir"/usr/lib/$pkgname/plugin/sha256_password.so \
+		"$pkgdir"/usr/lib/$pkgname/plugin/caching_sha2_password.so \
+		"$pkgdir"/usr/lib/$pkgname/plugin/client_ed25519.so \
+		"$pkgdir"/usr/lib/libmysqlclient.so \
+		"$pkgdir"/usr/lib/libmysqlclient_r.so \
+		"$pkgdir"/usr/lib/libmariadb.so* \
+		"$pkgdir"/usr/lib/pkgconfig/libmariadb.pc
+
+	install -d -m750 -o mysql -g mysql "$pkgdir"/var/lib/mysql
+
+	cat >"$pkgdir"/etc/my.cnf<<-EOF
+	# This group is read both both by the client and the server
+	# use it for options that affect everything
+	[client-server]
+
+	# This group is read by the server
+	[mysqld]
+
+	# Disabling symbolic-links is recommended to prevent assorted security risks
+	symbolic-links=0
+
+	# include all files from the config directory
+	!includedir /etc/my.cnf.d
+	EOF
+
+	cat >"$pkgdir"/etc/my.cnf.d/mariadb-server.cnf<<-EOF
+	#
+	# These groups are read by MariaDB server.
+	# Use it for options that only the server (but not clients) should see
+
+	# this is read by the standalone daemon and embedded servers
+	[server]
+
+	# this is only for the mysqld standalone daemon
+	[mysqld]
+	skip-networking
+
+	# Galera-related settings
+	[galera]
+	# Mandatory settings
+	#wsrep_on=ON
+	#wsrep_provider=
+	#wsrep_cluster_address=
+	#binlog_format=row
+	#default_storage_engine=InnoDB
+	#innodb_autoinc_lock_mode=2
+	#
+	# Allow server to accept connections on all interfaces.
+	#
+	#bind-address=0.0.0.0
+	#
+	# Optional setting
+	#wsrep_slave_threads=1
+	#innodb_flush_log_at_trx_commit=0
+
+	# this is only for embedded server
+	[embedded]
+
+	# This group is only read by MariaDB servers, not by MySQL.
+	# If you use the same .cnf file for MySQL and MariaDB,
+	# you can put MariaDB-only options here
+	[mariadb]
+
+	# This group is only read by MariaDB-10.5 servers.
+	# If you use the same .cnf file for MariaDB of different versions,
+	# use this group for options that older servers don't understand
+	[mariadb-10.5]
+
+	EOF
+}
+
+dev() {
+	default_dev
+	replaces="libmysqlclient mysql-dev"
+	provides="mysql-dev=$pkgver-r$pkgrel"
+	mkdir -p "$subpkgdir"/usr/bin
+}
+
+common() {
+	pkgdesc="MariaDB common files for both server and client"
+	replaces="mysql-common"
+	depends=
+	mkdir -p "$subpkgdir"/usr/lib/$pkgname/plugin
+
+	amove etc/my.*
+
+	local lang="charsets danish english french greek italian korean norwegian-ny
+		portuguese russian slovak swedish czech dutch estonian german
+		hungarian japanese norwegian polish romanian serbian spanish
+		ukrainian"
+	for l in $lang; do
+		amove usr/share/$pkgname/$l
+	done
+}
+
+mytest() {
+	pkgdesc="The test suite distributed with MariaDB"
+
+	amove usr/bin/mysql_client_test \
+		usr/bin/mysql_client_test_embedded \
+		usr/bin/my_safe_process \
+		usr/bin/mariadb-client-test \
+		usr/bin/mariadb-client-test-embedded \
+		usr/bin/mariadb-test \
+		usr/bin/mariadb-test-embedded \
+		usr/bin/mysqltest \
+		usr/bin/mysqltest_embedded \
+		usr/mariadb-test
+}
+
+client() {
+	pkgdesc="Client for the MariaDB database"
+	depends="mariadb-common=$pkgver-r$pkgrel"
+
+	local bins="myisam_ftdump mysql mysqladmin mysqlcheck mysqldump
+		mysqlimport mysqlshow mysql_waitpid mariadb-secure-installation"
+	local symlinks="mariadb mariadb-admin mariadb-check mariadb-dump
+		mariadb-import mariadb-show mariadb-waitpid mysql_secure_installation"
+
+	for i in $bins $symlinks; do
+		amove usr/bin/$i
+	done
+}
+
+_client_perl() {
+	pkgdesc="Client for the MariaDB database (perl tools)"
+	depends="mariadb-client=$pkgver-r$pkgrel perl"
+	install_if="mariadb-client=$pkgver-r$pkgrel perl"
+
+	for i in mysqlaccess mariadb-access mysql_find_rows \
+		mariadb-find-rows mysqldumpslow mariadb-dumpslow \
+		mysql_fix_extensions mariadb-fix-extensions; do
+		amove usr/bin/$i
+	done
+}
+
+bench() {
+	pkgdesc="MariaDB benchmark scripts and data"
+	replaces="mariadb"
+	mkdir -p "$subpkgdir"/usr/share/
+	mv "$pkgdir"/usr/sql-bench "$subpkgdir"/usr/share
+}
+
+_compat() {
+	pkgdesc="Dummy package for $1 migration"
+	depends="$2"
+	mkdir -p "$subpkgdir"
+}
+
+mysql() { _compat mysql mariadb; }
+_compat_client() { _compat mysql-client mariadb-client; }
+_compat_bench() { _compat mysql-bench mariadb-client; }
+
+backup() {
+	pkgdesc="The mariabackup tool for physical online backups"
+
+	amove usr/bin/mariabackup \
+		usr/bin/mariadb-backup \
+		usr/bin/mbstream
+}
+
+embedded() {
+	pkgdesc="MariaDB as an embeddable library"
+	depends="$pkgname-common=$pkgver-r$pkgrel"
+	amove usr/lib/libmariadbd.so.*
+}
+
+_embedded_dev() {
+	pkgdesc="MariaDB as an embeddable library - development files"
+	# this package only contains a symlink, but we want avoid pull in
+	# libmysqld (embedded) unless needed
+	amove usr/lib/libmysqld.so
+}
+
+mytop() {
+	pkgdesc="Command line tool used for monitoring MariaDB performance"
+	depends="$_mytopdeps"
+	amove usr/bin/mytop
+}
+
+_server_utils() {
+	pkgdesc="Non-essential server utilities for MariaDB/MySQL applications"
+	depends="perl $pkgname-common=$pkgver-r$pkgrel"
+
+	# perl utils
+	amove \
+		usr/bin/mysql_convert_table_format \
+		usr/bin/mariadb-convert-table-format \
+		usr/bin/mysql_setpermission \
+		usr/bin/mariadb-setpermission \
+		usr/bin/mysqld_multi \
+		usr/bin/mariadbd-multi \
+		usr/bin/mysqlhotcopy \
+		usr/bin/mariadb-hotcopy
+	# tools that can be used remotely and other tools
+	amove \
+		usr/bin/mysql_upgrade \
+		usr/bin/mariadb-upgrade \
+		usr/bin/perror \
+		usr/bin/mysqld_safe_helper \
+		usr/bin/mariadbd-safe-helper
+}
+
+_plugin_rocksdb() {
+	pkgdesc="MariaDB plugin for RocksDB (MyRocks)"
+	url="https://mariadb.com/kb/en/library/myrocks/"
+	depends="$pkgname=$pkgver-r$pkgrel"
+
+	amove usr/lib/mariadb/plugin/ha_rocksdb.so
+}
+
+sha512sums="
+65b74e5443c2b7e8bc6a4c2a22838e3440bdbfef9c8fa6ed2b142e3ed0121d77a049c1054b05859ff8232386894ae0e7429d1a646ecf503e9c01c4952c83c51a  mariadb-11.4.5.tar.gz
+c352969f6665b0ffa387f7b185a5dea7751f4b16c12c809627857b27321efa09159369d7dd5c852d6159a9f173cb895fb601f0c52a1fa6e3527899520030964c  mariadb.initd
+ec9068ee1da8276f04ac3654640cb6149e0f0a21ee77b133d7e5b82fa2ab2fd7971bce6ea3c5a5e094d8c6e2571f4ce43d7014b2767bb27e0a335005ced81968  gcc13.patch
+cccaa99917913f5f08204464e7fb9865e30760a1933ff240c0035271f831058d2ea4ada867da164309bfc91f6b564ec13bb290900d90c3697866971c7666f91b  lfs64.patch
+7b4024818c8bb04fe5916905ceee79e93e24ee8c6d51593031967a106d1c001f2127a81acbbbb06aa4bb676ea00281a1cba03df7987177d97e7abe07efd7188f  disable-failing-test.patch
+4965275371e6d5e08e32a16fcfff2e68dfdcf6f4c30e5beffe18dcf56b503cbf373feeda814694e048964b16165ad65156c32fe27e974bed47201e8cf60736c6  have_stacktrace.patch
+330f8a51af6e7ad1ae024d5a45478c148ce1cd80febe4348dd0f432cfd3cef9080317af7025ad7865563c854ebffc80582b3d31412fba53cd3f4d3738c62a975  libfmt.patch
+"

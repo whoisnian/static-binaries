@@ -1,7 +1,7 @@
-# syntax=docker.io/docker/dockerfile:1.14
+# syntax=docker.io/docker/dockerfile:1.16
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.21
+ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=main/procps-ng
 ARG PACKAGE_NAME=procps-ng
 ARG PACKAGE_VERSION=4.0.4
@@ -21,18 +21,18 @@ WORKDIR /src
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
   ln -s /var/cache/apk /etc/apk/cache && apk upgrade && apk add alpine-sdk
 
-# procps-ng depends (4)
+# procps-ng depends (5)
 #   so:libc.musl-x86_64.so.1
 #   so:libintl.so.8 => libintl.a provided by gettext-static
 #   so:libncursesw.so.6 => libncursesw.a provided by ncurses-static
 #   so:libproc2.so.0
-ARG EXTRA_DEPS="gettext-static ncurses-static"
+#   so:libutmps.so.0.1 => libutmps.a provided by utmps-static
+ARG EXTRA_DEPS="gettext-static ncurses-static utmps-static"
 
 # STEP-1: install dependencies
+COPY aports "${PACKAGE_PATH}"
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
-  wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/${ALPINE_VERSION}-stable/aports-${ALPINE_VERSION}-stable.tar.gz?path=${PACKAGE_PATH}" && \
-  tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && cd "${PACKAGE_PATH}" && \
-  grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
+  cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
   abuild -F deps && apk add ${EXTRA_DEPS}
 
 # STEP-2: build executable
@@ -58,6 +58,9 @@ COPY --from=build /usr/local/bin/ps /
 ENTRYPOINT ["/ps"]
 
 ########## CHANGES ##########
+# 20250531:
+#   * Upgrade alpine image to 3.22
+#   * Commit APKBUILD to git for reproducible build
 # 20250401:
 #   * Enable static build via configure options
 #   * Output only ps executable

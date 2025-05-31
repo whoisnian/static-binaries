@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.14
+# syntax=docker.io/docker/dockerfile:1.16
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.21
+ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=main/vim
 ARG PACKAGE_NAME=vim
-ARG PACKAGE_VERSION=9.1.1105
+ARG PACKAGE_VERSION=9.1.1415
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -29,11 +29,9 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 ARG EXTRA_DEPS="ncurses-static"
 
 # STEP-1: install dependencies
+COPY aports "${PACKAGE_PATH}"
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
-  wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/${ALPINE_VERSION}-stable/aports-${ALPINE_VERSION}-stable.tar.gz?path=${PACKAGE_PATH}" && \
-  tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && cd "${PACKAGE_PATH}" && \
-  grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
-  sed -i APKBUILD -e '/gtk+3.0-dev/d;/libx11-dev/d;/libxt-dev/d;' && \
+  cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
   abuild -F deps && apk add ${EXTRA_DEPS}
 
 # STEP-2: build executable
@@ -64,6 +62,9 @@ COPY --from=build /usr/local/bin/vim /usr/local/bin/xxd /
 ENTRYPOINT ["/vim"]
 
 ########## CHANGES ##########
+# 20250531:
+#   * Upgrade vim to 9.1.1415
+#   * Commit APKBUILD to git for reproducible build
 # 20250403:
 #   * Enable static build via CFLAGS and LDFLAGS
 #   * Disable Lua/Python3/Ruby interpreters

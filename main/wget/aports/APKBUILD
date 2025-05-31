@@ -1,0 +1,58 @@
+# Contributor: Sandro Jäckel <sandro.jaeckel@posteo.de>
+# Contributor: Sergei Lukin <sergej.lukin@gmail.com>
+# Contributor: Carlo Landmeter <clandmeter@alpinelinux.org>
+# Maintainer: Carlo Landmeter <clandmeter@alpinelinux.org>
+pkgname=wget
+pkgver=1.25.0
+pkgrel=1
+pkgdesc="Network utility to retrieve files from the Web"
+url="https://www.gnu.org/software/wget/wget.html"
+arch="all"
+license="GPL-3.0-or-later WITH OpenSSL-Exception"
+makedepends="libidn2-dev openssl-dev>3 perl zlib-dev pcre2-dev"
+checkdepends="perl-http-daemon"
+subpackages="$pkgname-doc"
+source="https://ftp.gnu.org/gnu/wget/wget-$pkgver.tar.gz"
+
+# secfixes:
+#   1.25.0-r0:
+#     - CVE-2024-10524
+#   1.20.3-r0:
+#     - CVE-2019-5953
+#   1.20.1-r0:
+#     - CVE-2018-20483
+#   1.19.5-r0:
+#     - CVE-2018-0494
+#   1.19.1-r1:
+#     - CVE-2017-6508
+#   1.19.2-r0:
+#     - CVE-2017-13090
+
+build() {
+	CFLAGS="$CFLAGS -flto=auto" \
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man \
+		--infodir=/usr/share/info \
+		--with-libidn \
+		--with-ssl=openssl \
+		--disable-nls
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+
+	rm -rf "$pkgdir"/usr/lib
+}
+
+sha512sums="
+a7ce33c07a1a206a8574b6e9ea7cc5292315df0914edbcf05a014d35ae9e3d24699a46818b409b884ada57428cf30502f4bbb3767cae2c6934e4e7fb2d0c5036  wget-1.25.0.tar.gz
+"

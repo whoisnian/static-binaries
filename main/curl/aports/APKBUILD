@@ -1,0 +1,276 @@
+# Contributor: Sergei Lukin <sergej.lukin@gmail.com>
+# Contributor: Valery Kartel <valery.kartel@gmail.com>
+# Contributor: Łukasz Jendrysik <scadu@yandex.com>
+
+# RESTRICTED: Do NOT enable the rustls or hyper backends, as they depend on Rust
+# and Rust is not yet available on all architectures.  Any commit which changes
+# this aport from arch=all WILL be reverted.
+
+maintainer="fossdd <fossdd@pwned.life>"
+pkgname=curl
+pkgver=8.14.0
+pkgrel=2
+pkgdesc="URL retrival utility and library"
+url="https://curl.se/"
+arch="all"
+license="curl"
+depends="ca-certificates-bundle"
+depends_dev="
+	brotli-dev
+	c-ares-dev
+	libidn2-dev
+	libpsl-dev
+	nghttp2-dev
+	openssl-dev>3
+	zlib-dev
+	zstd-dev
+	"
+checkdepends="nghttp2 python3"
+makedepends_host="$depends_dev"
+makedepends_build="groff perl"
+subpackages="$pkgname-dbg $pkgname-static $pkgname-doc $pkgname-dev libcurl"
+if [ -z "$BOOTSTRAP" ] && [ -z "$APORTS_BOOTSTRAP" ]; then
+	subpackages="$subpackages $pkgname-zsh-completion $pkgname-fish-completion"
+fi
+source="https://curl.se/download/curl-$pkgver.tar.xz
+	multi-fix-add-handle-resizing.patch
+	"
+options="net" # Required for running tests
+if [ -n "$BOOTSTRAP" ] || [ -n "$APORTS_BOOTSTRAP" ]; then
+	options="$options !check" # remove python3 dependency
+fi
+provides="wcurl=$pkgver-r$pkgrel"
+replaces="wcurl"
+
+# secfixes:
+#   8.14.0-r0:
+#     - CVE-2025-5025
+#     - CVE-2025-4947
+#   8.12.0-r0:
+#     - CVE-2025-0167
+#     - CVE-2025-0665
+#     - CVE-2025-0725
+#   8.11.1-r0:
+#     - CVE-2024-11053
+#   8.11.0-r0:
+#     - CVE-2024-9681
+#   8.10.0-r0:
+#     - CVE-2024-8096
+#   8.9.1-r0:
+#     - CVE-2024-7264
+#   8.9.0-r0:
+#     - CVE-2024-6197
+#     - CVE-2024-6874
+#   8.7.1-r0:
+#     - CVE-2024-2004
+#     - CVE-2024-2379
+#     - CVE-2024-2398
+#     - CVE-2024-2466
+#   8.6.0-r0:
+#     - CVE-2024-0853
+#   8.5.0-r0:
+#     - CVE-2023-46218
+#     - CVE-2023-46219
+#   8.4.0-r0:
+#     - CVE-2023-38545
+#     - CVE-2023-38546
+#   8.3.0-r0:
+#     - CVE-2023-38039
+#   8.1.0-r0:
+#     - CVE-2023-28319
+#     - CVE-2023-28320
+#     - CVE-2023-28321
+#     - CVE-2023-28322
+#   8.0.0-r0:
+#     - CVE-2023-27533
+#     - CVE-2023-27534
+#     - CVE-2023-27535
+#     - CVE-2023-27536
+#     - CVE-2023-27537
+#     - CVE-2023-27538
+#   7.88.0-r0:
+#     - CVE-2023-23914
+#     - CVE-2023-23915
+#     - CVE-2023-23916
+#   7.87.0-r0:
+#     - CVE-2022-43551
+#     - CVE-2022-43552
+#   7.86.0-r0:
+#     - CVE-2022-32221
+#     - CVE-2022-35260
+#     - CVE-2022-42915
+#     - CVE-2022-42916
+#   7.85.0-r0:
+#     - CVE-2022-35252
+#   7.84.0-r0:
+#     - CVE-2022-32205
+#     - CVE-2022-32206
+#     - CVE-2022-32207
+#     - CVE-2022-32208
+#   7.83.1-r0:
+#     - CVE-2022-27778
+#     - CVE-2022-27779
+#     - CVE-2022-27780
+#     - CVE-2022-27781
+#     - CVE-2022-27782
+#     - CVE-2022-30115
+#   7.83.0-r0:
+#     - CVE-2022-22576
+#     - CVE-2022-27774
+#     - CVE-2022-27775
+#     - CVE-2022-27776
+#   7.79.0-r0:
+#     - CVE-2021-22945
+#     - CVE-2021-22946
+#     - CVE-2021-22947
+#   7.78.0-r0:
+#     - CVE-2021-22922
+#     - CVE-2021-22923
+#     - CVE-2021-22924
+#     - CVE-2021-22925
+#   7.77.0-r0:
+#     - CVE-2021-22898
+#     - CVE-2021-22901
+#   7.76.0-r0:
+#     - CVE-2021-22876
+#     - CVE-2021-22890
+#   7.74.0-r0:
+#     - CVE-2020-8284
+#     - CVE-2020-8285
+#     - CVE-2020-8286
+#   7.72.0-r0:
+#     - CVE-2020-8231
+#   7.71.0-r0:
+#     - CVE-2020-8169
+#     - CVE-2020-8177
+#   7.66.0-r0:
+#     - CVE-2019-5481
+#     - CVE-2019-5482
+#   7.65.0-r0:
+#     - CVE-2019-5435
+#     - CVE-2019-5436
+#   7.64.0-r0:
+#     - CVE-2018-16890
+#     - CVE-2019-3822
+#     - CVE-2019-3823
+#   7.62.0-r0:
+#     - CVE-2018-16839
+#     - CVE-2018-16840
+#     - CVE-2018-16842
+#   7.61.1-r0:
+#     - CVE-2018-14618
+#   7.61.0-r0:
+#     - CVE-2018-0500
+#   7.60.0-r0:
+#     - CVE-2018-1000300
+#     - CVE-2018-1000301
+#   7.59.0-r0:
+#     - CVE-2018-1000120
+#     - CVE-2018-1000121
+#     - CVE-2018-1000122
+#   7.57.0-r0:
+#     - CVE-2017-8816
+#     - CVE-2017-8817
+#     - CVE-2017-8818
+#   7.56.1-r0:
+#     - CVE-2017-1000257
+#   7.55.0-r0:
+#     - CVE-2017-1000099
+#     - CVE-2017-1000100
+#     - CVE-2017-1000101
+#   7.54.0-r0:
+#     - CVE-2017-7468
+#   7.53.1-r2:
+#     - CVE-2017-7407
+#   7.53.0-r0:
+#     - CVE-2017-2629
+#   7.52.1-r0:
+#     - CVE-2016-9594
+#   7.51.0-r0:
+#     - CVE-2016-8615
+#     - CVE-2016-8616
+#     - CVE-2016-8617
+#     - CVE-2016-8618
+#     - CVE-2016-8619
+#     - CVE-2016-8620
+#     - CVE-2016-8621
+#     - CVE-2016-8622
+#     - CVE-2016-8623
+#     - CVE-2016-8624
+#     - CVE-2016-8625
+#   7.50.3-r0:
+#     - CVE-2016-7167
+#   7.50.2-r0:
+#     - CVE-2016-7141
+#   7.50.1-r0:
+#     - CVE-2016-5419
+#     - CVE-2016-5420
+#     - CVE-2016-5421
+#   7.36.0-r0:
+#     - CVE-2014-0138
+#     - CVE-2014-0139
+#   0:
+#     - CVE-2021-22897
+
+build() {
+	./configure \
+		--build=$CBUILD \
+		--host=$CHOST \
+		--prefix=/usr \
+		--enable-ares \
+		--enable-ipv6 \
+		--enable-unix-sockets \
+		--enable-static \
+		--with-libidn2 \
+		--with-nghttp2 \
+		--with-openssl \
+		--with-ca-bundle=/etc/ssl/cert.pem \
+		--with-ca-path=/etc/ssl/certs \
+		--with-zsh-functions-dir \
+		--with-fish-functions-dir \
+		--disable-ldap \
+		--with-pic \
+		--enable-websockets \
+		--without-libssh2 # https://bugs.alpinelinux.org/issues/10222
+	make
+
+	# generation of completions is not supported when cross-compiling.
+	if [ -z "$BOOTSTRAP" ] && [ -z "$APORTS_BOOTSTRAP" ]; then
+		make -C scripts/
+	fi
+}
+
+check() {
+	make -C tests
+	make -j1 -C tests TFLAGS="-j$JOBS" nonflaky-test
+}
+
+package() {
+	# depends on exactly the same build of libcurl
+	depends="libcurl=$pkgver-r$pkgrel"
+
+	make install DESTDIR="$pkgdir"
+	if [ -z "$BOOTSTRAP" ] && [ -z "$APORTS_BOOTSTRAP" ]; then
+		install -Dm644 scripts/_curl -t \
+			"$pkgdir"/usr/share/zsh/site-functions/
+		install -Dm644 scripts/curl.fish -t \
+			"$pkgdir"/usr/share/fish/vendor_completions.d/
+	fi
+}
+
+libcurl() {
+	pkgdesc="The multiprotocol file transfer library"
+
+	amove usr/lib
+}
+
+dev() {
+	default_dev
+	# Used by trurl
+	install -Dm755 -t "$subpkgdir"/usr/bin "$builddir"/scripts/cd2nroff
+}
+
+sha512sums="
+d9f49cac0b93dbc53879713cc017392b4277d84b489bbf2ef3b585c6a50eea6c3a7b80043286b34062af04329560f2dc321f315b0038ce93435aa9bbcaec1eea  curl-8.14.0.tar.xz
+a6c185ab6faec2e7c079a932b8198f33c440f81a72eacf8736a857b54bf0f2166f8a8d9f225490250aab337fd70c820c7799ea804f0afebc10b36ee120901348  multi-fix-add-handle-resizing.patch
+"
