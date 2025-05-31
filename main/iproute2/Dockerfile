@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.14
+# syntax=docker.io/docker/dockerfile:1.16
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.21
+ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=main/iproute2
 ARG PACKAGE_NAME=iproute2
-ARG PACKAGE_VERSION=6.11.0
+ARG PACKAGE_VERSION=6.15.0
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -28,10 +28,9 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 ARG EXTRA_DEPS="libcap-static libmnl-static"
 
 # STEP-1: install dependencies
+COPY aports "${PACKAGE_PATH}"
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
-  wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/${ALPINE_VERSION}-stable/aports-${ALPINE_VERSION}-stable.tar.gz?path=${PACKAGE_PATH}" && \
-  tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && cd "${PACKAGE_PATH}" && \
-  grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
+  cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
   abuild -F deps && apk add ${EXTRA_DEPS}
 
 # STEP-2: build executable
@@ -62,6 +61,9 @@ COPY --from=build /usr/local/bin/ss /
 ENTRYPOINT ["/ss"]
 
 ########## CHANGES ##########
+# 20250531:
+#   * Upgrade iproute2 to 6.15.0
+#   * Commit APKBUILD to git for reproducible build
 # 20250404:
 #   * Enable static build via LDFLAGS
 #   * Build and output only ss executable
