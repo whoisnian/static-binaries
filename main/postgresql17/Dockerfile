@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.14
+# syntax=docker.io/docker/dockerfile:1.16
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.21
+ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=main/postgresql17
 ARG PACKAGE_NAME=postgresql17
-ARG PACKAGE_VERSION=17.4
+ARG PACKAGE_VERSION=17.5
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -37,10 +37,9 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 ARG EXTRA_DEPS="libxml2-static lz4-static ncurses-static openssl-libs-static readline-static util-linux-static xz-static zlib-static zstd-static"
 
 # STEP-1: install dependencies
+COPY aports "${PACKAGE_PATH}"
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
-  wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/${ALPINE_VERSION}-stable/aports-${ALPINE_VERSION}-stable.tar.gz?path=${PACKAGE_PATH}" && \
-  tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && cd "${PACKAGE_PATH}" && \
-  grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
+  cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
   abuild -F deps && apk add ${EXTRA_DEPS}
 
 # STEP-2: build executable
@@ -87,6 +86,9 @@ COPY --from=build /usr/local/bin/psql /usr/local/bin/pg_dump /
 ENTRYPOINT ["/psql"]
 
 ########## CHANGES ##########
+# 20250531:
+#   * Upgrade postgresql17 to 17.5
+#   * Commit APKBUILD to git for reproducible build
 # 20250401:
 #   * Enable static build via LDFLAGS_EX
 #   * Disable server-side fetures build via configure options
