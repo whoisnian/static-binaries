@@ -1,7 +1,7 @@
-# syntax=docker.io/docker/dockerfile:1.14
+# syntax=docker.io/docker/dockerfile:1.16
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.21
+ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=main/tcpdump
 ARG PACKAGE_NAME=tcpdump
 ARG PACKAGE_VERSION=4.99.5
@@ -28,10 +28,9 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 ARG EXTRA_DEPS="openssl-libs-static"
 
 # STEP-1: install dependencies
+COPY aports "${PACKAGE_PATH}"
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
-  wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/${ALPINE_VERSION}-stable/aports-${ALPINE_VERSION}-stable.tar.gz?path=${PACKAGE_PATH}" && \
-  tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && cd "${PACKAGE_PATH}" && \
-  grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
+  cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
   abuild -F deps && apk add ${EXTRA_DEPS}
 
 # STEP-2: build executable
@@ -62,5 +61,8 @@ COPY --from=build /usr/local/bin/tcpdump /
 ENTRYPOINT ["/tcpdump"]
 
 ########## CHANGES ##########
+# 20250531:
+#   * Upgrade alpine image to 3.22
+#   * Commit APKBUILD to git for reproducible build
 # 20250326:
 #   * Enable static build via CFLAGS and CMAKE_FIND_LIBRARY_SUFFIXES
