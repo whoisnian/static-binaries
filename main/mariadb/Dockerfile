@@ -1,7 +1,7 @@
-# syntax=docker.io/docker/dockerfile:1.14
+# syntax=docker.io/docker/dockerfile:1.16
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.21
+ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=main/mariadb
 ARG PACKAGE_NAME=mariadb
 ARG PACKAGE_VERSION=11.4.5
@@ -30,13 +30,14 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
 #   so:libssl.so.3 => libssl.a provided by openssl-libs-static
 #   so:libstdc++.so.6 => libstdc++.a provided by libstdc++-dev
 #   so:libz.so.1 => libz.a provided by zlib-static
-ARG EXTRA_DEPS="ncurses-static openssl-libs-static zlib-static"
+# cmake options
+#   -DWITH_PCRE=system => libpcre2-8.a provided by pcre2-static
+ARG EXTRA_DEPS="ncurses-static openssl-libs-static zlib-static pcre2-static"
 
 # STEP-1: install dependencies
+COPY aports "${PACKAGE_PATH}"
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
-  wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/${ALPINE_VERSION}-stable/aports-${ALPINE_VERSION}-stable.tar.gz?path=${PACKAGE_PATH}" && \
-  tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && cd "${PACKAGE_PATH}" && \
-  grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
+  cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
   abuild -F deps && apk add ${EXTRA_DEPS}
 
 # STEP-2: build executable
@@ -45,7 +46,6 @@ RUN --mount=type=cache,target=/var/cache/distfiles <<EOT
   set -ex
   cd "${PACKAGE_PATH}"
   export LDFLAGS=-static
-  sed -i APKBUILD -e 's|https://rsync.osuosl.org/pub/mariadb|https://downloads.mariadb.org/interstitial|'
   sed -i APKBUILD -e 's|cmake -B build -G Ninja -Wno-dev|& -DWITHOUT_SERVER=ON -DDISABLE_SHARED=ON|'
   sed -i APKBUILD -e 's|-DPLUGIN_\([^=]\+\)=[^ ]\+ |-DPLUGIN_\1=NO |'
   sed -i APKBUILD -e 's|cmake --build build$|& --target mariadb mariadb-dump|'
@@ -83,6 +83,10 @@ COPY --from=build /usr/local/bin/mariadb /usr/local/bin/mariadb-dump /
 ENTRYPOINT ["/mariadb"]
 
 ########## CHANGES ##########
+# 20250531:
+#   * Upgrade alpine image to 3.22
+#   * Fix cmake generation error because of pcre2-static split
+#   * Commit APKBUILD to git for reproducible build
 # 20250408:
 #   * Statically link auth plugins like caching_sha2_password
 # 20250330:
