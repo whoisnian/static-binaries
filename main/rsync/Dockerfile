@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.14
+# syntax=docker.io/docker/dockerfile:1.16
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.21
+ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=main/rsync
 ARG PACKAGE_NAME=rsync
-ARG PACKAGE_VERSION=3.4.0
+ARG PACKAGE_VERSION=3.4.1
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -34,11 +34,10 @@ ARG EXTRA_DEPS="acl-static lz4-static popt-static zlib-static zstd-static"
 # STEP-1: install xxhash dependencies
 ARG XXHASH_PATH=main/xxhash
 ARG XXHASH_NAME=xxhash
-ARG XXHASH_VERSION=0.8.2
+ARG XXHASH_VERSION=0.8.3
+COPY xxhash "${XXHASH_PATH}"
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
-  wget -O "${XXHASH_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/${ALPINE_VERSION}-stable/aports-${ALPINE_VERSION}-stable.tar.gz?path=${XXHASH_PATH}" && \
-  tar -xf "${XXHASH_NAME}.tar.gz" --strip-components=1 && cd "${XXHASH_PATH}" && \
-  grep -q "pkgver=${XXHASH_VERSION}" APKBUILD && echo 'pkgver matched' && \
+  cd "${XXHASH_PATH}" && grep -q "pkgver=${XXHASH_VERSION}" APKBUILD && echo 'pkgver matched' && \
   abuild -F deps
 
 # STEP-2: build xxhash library
@@ -50,11 +49,9 @@ RUN --mount=type=cache,target=/var/cache/distfiles <<EOT
 EOT
 
 # STEP-3: install dependencies
+COPY aports "${PACKAGE_PATH}"
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
-  wget -O "${PACKAGE_NAME}.tar.gz" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/${ALPINE_VERSION}-stable/aports-${ALPINE_VERSION}-stable.tar.gz?path=${PACKAGE_PATH}" && \
-  tar -xf "${PACKAGE_NAME}.tar.gz" --strip-components=1 && cd "${PACKAGE_PATH}" && \
-  grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
-  sed -i APKBUILD -e '/xxhash-dev/d' && \
+  cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
   abuild -F deps && apk add ${EXTRA_DEPS}
 
 # STEP-4: build executable
@@ -64,7 +61,6 @@ RUN --mount=type=cache,target=/var/cache/distfiles <<EOT
   export CFLAGS="-static -L/src/${XXHASH_PATH}/pkg/${XXHASH_NAME}/usr/lib"
   export CPPFLAGS="-I/src/${XXHASH_PATH}/pkg/${XXHASH_NAME}/usr/include"
   sed -i APKBUILD -e 's|https://download.samba.org/pub/rsync|https://download.samba.org/pub/rsync/src|'
-  sed -i APKBUILD -e 's|make reconfigure$|make|'
   abuild -F fetch verify unpack prepare mkusers build package
 EOT
 
@@ -82,6 +78,9 @@ COPY --from=build /usr/local/bin/rsync /
 ENTRYPOINT ["/rsync"]
 
 ########## CHANGES ##########
+# 20250531:
+#   * Upgrade rsync to 3.4.1
+#   * Commit APKBUILD to git for reproducible build
 # 20250403:
 #   * Build libxxhash.a for configure --enable-xxhash
 #   * Enable static build via CFLAGS and CPPFLAGS
