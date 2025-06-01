@@ -9,8 +9,8 @@
 
 ########## environment variables ##########
 ENABLE_DEBUG=0
-_BIN_SUFFIX='_v20250601.0_linux_amd64'
-REDIS_CONN_OPTS=''    # '-u redis://testpw@127.0.0.1:6379 --no-auth-warning'
+_BIN_SUFFIX='_v20250601.3_linux_amd64'
+REDIS_CONN_OPTS=''    # '-u redis://testpw@127.0.0.1:6379'
 MYSQL_CONN_OPTS=''    # '-h 127.0.0.1 -u root -ptestpw'
 POSTGRES_CONN_OPTS='' # 'postgresql://postgres:testpw@127.0.0.1/postgres'
 TEMP_HTTP_PORT=18080
@@ -73,7 +73,7 @@ if [ -z "$POSTGRES_CONN_OPTS" ]; then
   START_POSTGRES_DOCKER=1
   POSTGRES_CONN_OPTS='postgresql://postgres:testpw@127.0.0.1/postgres'
   POSTGRES_CONTAINER_ID=$(sudo docker inspect -f '{{.ID}}' postgres-sidecar 2>/dev/null)
-  if [ $START_POSTGRES_DOCKER -eq 1 ]; then
+  if [ -z "$POSTGRES_CONTAINER_ID" ]; then
     POSTGRES_CONTAINER_ID=$(sudo docker run --rm -d --name postgres-sidecar -p 5432:5432 -e POSTGRES_PASSWORD=testpw postgres:17.5-alpine)
     for i in {1..10}; do
       if sudo docker exec "$POSTGRES_CONTAINER_ID" pg_isready | grep -q 'accepting connections'; then
@@ -201,9 +201,9 @@ assert_grep 'from 11.4.5-MariaDB' "$OUTPUT"
 OUTPUT=$(./dist/"mariadb-dump${_BIN_SUFFIX}" --version)
 assert_grep 'from 11.4.5-MariaDB' "$OUTPUT"
 
-OUTPUT=$(./dist/"mariadb${_BIN_SUFFIX}" $MYSQL_CONN_OPTS -e 'select User from mysql.user')
+OUTPUT=$(./dist/"mariadb${_BIN_SUFFIX}" $MYSQL_CONN_OPTS --disable-ssl-verify-server-cert -e 'select User from mysql.user')
 assert_grep 'mysql.infoschema' "$OUTPUT"
-OUTPUT=$(./dist/"mariadb-dump${_BIN_SUFFIX}" $MYSQL_CONN_OPTS mysql user)
+OUTPUT=$(./dist/"mariadb-dump${_BIN_SUFFIX}" $MYSQL_CONN_OPTS --disable-ssl-verify-server-cert mysql user)
 assert_grep 'Table structure for table' "$OUTPUT"
 assert_grep 'Dumping data for table' "$OUTPUT"
 assert_grep 'INSERT INTO `user` VALUES' "$OUTPUT"
