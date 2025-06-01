@@ -46,6 +46,7 @@ RUN --mount=type=cache,target=/var/cache/distfiles <<EOT
   set -ex
   cd "${PACKAGE_PATH}"
   export LDFLAGS=-static
+  sed -i APKBUILD -e 's|https://mirror.mariadb.org/|https://downloads.mariadb.org/interstitial/|'
   sed -i APKBUILD -e 's|cmake -B build -G Ninja -Wno-dev|& -DWITHOUT_SERVER=ON -DDISABLE_SHARED=ON|'
   sed -i APKBUILD -e 's|-DPLUGIN_\([^=]\+\)=[^ ]\+ |-DPLUGIN_\1=NO |'
   sed -i APKBUILD -e 's|cmake --build build$|& --target mariadb mariadb-dump|'
