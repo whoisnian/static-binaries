@@ -36,6 +36,9 @@ jobs:
       - run: docker build -o=dist main/tcpdump
       - run: docker build -o=dist main/vim
       - run: docker build -o=dist main/wget
+      - run: docker build -o=dist custom/mysql57
+      - run: docker build -o=dist custom/mysql80
+      - run: docker build -o=dist custom/mysql84
 
       - run: |
           for file in dist/*; do
