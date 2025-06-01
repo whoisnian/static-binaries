@@ -11,7 +11,7 @@ pkggroups="mysql"
 arch="x86_64 aarch64"
 license="GPL"
 _boost_ver=1.59.0
-makedepends="bison cmake libaio-dev ncurses-dev openssl-dev zlib-dev ncurses-static openssl-libs-static zlib-static"
+makedepends="bison cmake linux-headers libaio-dev ncurses-dev openssl-dev zlib-dev ncurses-static openssl-libs-static zlib-static"
 source="https://dev.mysql.com/get/Downloads/MySQL-5.7/$_pkgname-$pkgver.tar.gz
 	https://archives.boost.io/release/$_boost_ver/source/boost_${_boost_ver//./_}.tar.gz
 	strerror.patch

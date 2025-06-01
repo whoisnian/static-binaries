@@ -11,7 +11,7 @@ pkggroups="mysql"
 arch="x86_64 aarch64"
 license="GPL-2.0-only"
 # _boost_ver=1.77.0
-makedepends="perl bison cmake libaio-dev libtirpc-dev ncurses-dev openssl-dev zlib-dev zstd-dev ncurses-static openssl-libs-static zlib-static zstd-static"
+makedepends="perl bison cmake linux-headers libaio-dev libtirpc-dev ncurses-dev openssl-dev zlib-dev zstd-dev ncurses-static openssl-libs-static zlib-static zstd-static"
 source="https://dev.mysql.com/get/Downloads/MySQL-8.0/$_pkgname-boost-$pkgver.tar.gz"
 builddir="$srcdir/$_pkgname-$pkgver"
 
