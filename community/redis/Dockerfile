@@ -4,7 +4,7 @@
 ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=community/redis
 ARG PACKAGE_NAME=redis
-ARG PACKAGE_VERSION=8.0.2
+ARG PACKAGE_VERSION=8.0.4
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -65,6 +65,8 @@ COPY --from=build /usr/local/bin/redis-cli /
 ENTRYPOINT ["/redis-cli"]
 
 ########## CHANGES ##########
+# 20251015:
+#   * Upgrade redis to 8.0.4
 # 20250531:
 #   * Upgrade redis to 8.0.2
 #   * Commit APKBUILD to git for reproducible build
