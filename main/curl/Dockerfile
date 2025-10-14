@@ -72,6 +72,8 @@ COPY --from=build /usr/local/bin/curl /
 ENTRYPOINT ["/curl"]
 
 ########## CHANGES ##########
+# 20251015:
+#   * Upgrade curl to 8.14.1
 # 20250531:
 #   * Upgrade curl to 8.14.0
 #   * Commit APKBUILD to git for reproducible build

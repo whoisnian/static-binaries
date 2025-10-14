@@ -8,7 +8,7 @@
 
 maintainer="fossdd <fossdd@pwned.life>"
 pkgname=curl
-pkgver=8.14.0
+pkgver=8.14.1
 pkgrel=2
 pkgdesc="URL retrival utility and library"
 url="https://curl.se/"
@@ -33,7 +33,9 @@ if [ -z "$BOOTSTRAP" ] && [ -z "$APORTS_BOOTSTRAP" ]; then
 	subpackages="$subpackages $pkgname-zsh-completion $pkgname-fish-completion"
 fi
 source="https://curl.se/download/curl-$pkgver.tar.xz
-	multi-fix-add-handle-resizing.patch
+	fix-returncode-with-retry.patch
+	CVE-2025-9086.patch
+	CVE-2025-10148.patch
 	"
 options="net" # Required for running tests
 if [ -n "$BOOTSTRAP" ] || [ -n "$APORTS_BOOTSTRAP" ]; then
@@ -43,6 +45,11 @@ provides="wcurl=$pkgver-r$pkgrel"
 replaces="wcurl"
 
 # secfixes:
+#   8.14.1-r2:
+#     - CVE-2025-9086
+#     - CVE-2025-10148
+#   8.14.1-r0:
+#     - CVE-2025-5399
 #   8.14.0-r0:
 #     - CVE-2025-5025
 #     - CVE-2025-4947
@@ -271,6 +278,8 @@ dev() {
 }
 
 sha512sums="
-d9f49cac0b93dbc53879713cc017392b4277d84b489bbf2ef3b585c6a50eea6c3a7b80043286b34062af04329560f2dc321f315b0038ce93435aa9bbcaec1eea  curl-8.14.0.tar.xz
-a6c185ab6faec2e7c079a932b8198f33c440f81a72eacf8736a857b54bf0f2166f8a8d9f225490250aab337fd70c820c7799ea804f0afebc10b36ee120901348  multi-fix-add-handle-resizing.patch
+7f6eae04cc23c50fc41d448aa28dfa59141018009e42c5b1e3f4e0d40c0633460b4e6eec05dfc290f7953671096abfa70a8b5443fccdd3f1be6be32ac10b31d9  curl-8.14.1.tar.xz
+4324a97b532b9d9c35fa79b475aab36c2a47ad49c676c8e2129feedc279501e712fad100af76a98c3ffb8b951d8c591f4e45dee6e6e85d25189223a10aa3f733  fix-returncode-with-retry.patch
+713b42dbab208402db657da6002e55d87fc9d106091293e56a51a1fb64b55d780f2e97fe95b689ee69102f11178330eac824c364a5fadb1cbfd1efe3ac3443db  CVE-2025-9086.patch
+a6a5a93e121c9c754fa26a0ecf02dba33a913ba194281eb8f41f30d0ebe14e0a953a73a9d0c2d4a4f9a983951ad159c12ff54603925ff98eea78f726b55ccbbc  CVE-2025-10148.patch
 "
