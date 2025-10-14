@@ -9,7 +9,7 @@
 
 ########## environment variables ##########
 ENABLE_DEBUG=0
-_BIN_SUFFIX='_v20250601.3_linux_amd64'
+_BIN_SUFFIX='_v20251015.0_linux_amd64'
 REDIS_CONN_OPTS=''    # '-u redis://testpw@127.0.0.1:6379'
 MYSQL_CONN_OPTS=''    # '-h 127.0.0.1 -u root -ptestpw'
 POSTGRES_CONN_OPTS='' # 'postgresql://postgres:testpw@127.0.0.1/postgres'
@@ -38,7 +38,7 @@ if [ -z "$REDIS_CONN_OPTS" ]; then
   REDIS_CONN_OPTS='-u redis://testpw@127.0.0.1:6379'
   REDIS_CONTAINER_ID=$(sudo docker inspect -f '{{.ID}}' redis-sidecar 2>/dev/null)
   if [ -z "$REDIS_CONTAINER_ID" ]; then
-    REDIS_CONTAINER_ID=$(sudo docker run --rm -d --name redis-sidecar -p 6379:6379 redis:8.0.2-alpine --requirepass testpw)
+    REDIS_CONTAINER_ID=$(sudo docker run --rm -d --name redis-sidecar -p 6379:6379 redis:8.0.4-alpine --requirepass testpw)
     for i in {1..10}; do
       if sudo docker exec "$REDIS_CONTAINER_ID" redis-cli $REDIS_CONN_OPTS ping | grep -q 'PONG'; then
         break
@@ -74,7 +74,7 @@ if [ -z "$POSTGRES_CONN_OPTS" ]; then
   POSTGRES_CONN_OPTS='postgresql://postgres:testpw@127.0.0.1/postgres'
   POSTGRES_CONTAINER_ID=$(sudo docker inspect -f '{{.ID}}' postgres-sidecar 2>/dev/null)
   if [ -z "$POSTGRES_CONTAINER_ID" ]; then
-    POSTGRES_CONTAINER_ID=$(sudo docker run --rm -d --name postgres-sidecar -p 5432:5432 -e POSTGRES_PASSWORD=testpw postgres:17.5-alpine)
+    POSTGRES_CONTAINER_ID=$(sudo docker run --rm -d --name postgres-sidecar -p 5432:5432 -e POSTGRES_PASSWORD=testpw postgres:17.6-alpine)
     for i in {1..10}; do
       if sudo docker exec "$POSTGRES_CONTAINER_ID" pg_isready | grep -q 'accepting connections'; then
         break
@@ -103,11 +103,22 @@ assert_grep_E 'WRITE: bw=.+, io=.+, run=.+' "$OUTPUT"
 
 log_i 'test community/fio success'
 
+########## test community/libqrencode ##########
+log_i 'test community/libqrencode'
+
+OUTPUT=$(./dist/"qrencode${_BIN_SUFFIX}" --version 2>&1)
+assert_grep 'qrencode version 4.1.1' "$OUTPUT"
+
+OUTPUT=$(./dist/"qrencode${_BIN_SUFFIX}" -t ascii hello | md5sum)
+assert_grep 'b201e91dc354a3799cf7f81ead94f1ef' "$OUTPUT"
+
+log_i 'test community/libqrencode success'
+
 ########## test community/redis ##########
 log_i 'test community/redis'
 
 OUTPUT=$(./dist/"redis-cli${_BIN_SUFFIX}" --version)
-assert_grep 'redis-cli 8.0.2' "$OUTPUT"
+assert_grep 'redis-cli 8.0.4' "$OUTPUT"
 
 OUTPUT=$(./dist/"redis-cli${_BIN_SUFFIX}" $REDIS_CONN_OPTS set tkey tvalue)
 assert_grep 'OK' "$OUTPUT"
@@ -139,7 +150,7 @@ log_i 'test main/7zip success'
 log_i 'test main/curl'
 
 OUTPUT=$(./dist/"curl${_BIN_SUFFIX}" --version)
-assert_grep 'curl 8.14.0' "$OUTPUT"
+assert_grep 'curl 8.14.1' "$OUTPUT"
 
 one_time_httpd
 OUTPUT=$(./dist/"curl${_BIN_SUFFIX}" --silent "http://127.0.0.1:$TEMP_HTTP_PORT")
@@ -162,7 +173,7 @@ log_i 'test main/htop success'
 log_i 'test main/iperf3'
 
 OUTPUT=$(./dist/"iperf3${_BIN_SUFFIX}" --version)
-assert_grep 'iperf 3.19' "$OUTPUT"
+assert_grep 'iperf 3.19.1' "$OUTPUT"
 
 ./dist/"iperf3${_BIN_SUFFIX}" --server --port $TEMP_IPERF3_PORT --daemon --one-off
 sleep 0.5
@@ -197,9 +208,9 @@ log_i 'test main/lsof success'
 log_i 'test main/mariadb'
 
 OUTPUT=$(./dist/"mariadb${_BIN_SUFFIX}" --version)
-assert_grep 'from 11.4.5-MariaDB' "$OUTPUT"
+assert_grep 'from 11.4.8-MariaDB' "$OUTPUT"
 OUTPUT=$(./dist/"mariadb-dump${_BIN_SUFFIX}" --version)
-assert_grep 'from 11.4.5-MariaDB' "$OUTPUT"
+assert_grep 'from 11.4.8-MariaDB' "$OUTPUT"
 
 OUTPUT=$(./dist/"mariadb${_BIN_SUFFIX}" $MYSQL_CONN_OPTS --disable-ssl-verify-server-cert -e 'select User from mysql.user')
 assert_grep 'mysql.infoschema' "$OUTPUT"
@@ -266,9 +277,9 @@ log_i 'test main/pigz success'
 log_i 'test main/postgresql17'
 
 OUTPUT=$(./dist/"psql${_BIN_SUFFIX}" --version)
-assert_grep 'psql (PostgreSQL) 17.5' "$OUTPUT"
+assert_grep 'psql (PostgreSQL) 17.6' "$OUTPUT"
 OUTPUT=$(./dist/"pg_dump${_BIN_SUFFIX}" --version)
-assert_grep 'pg_dump (PostgreSQL) 17.5' "$OUTPUT"
+assert_grep 'pg_dump (PostgreSQL) 17.6' "$OUTPUT"
 
 OUTPUT=$(./dist/"psql${_BIN_SUFFIX}" $POSTGRES_CONN_OPTS -c "select table_name from information_schema.tables where table_schema='information_schema'")
 assert_grep 'information_schema_catalog_name' "$OUTPUT"
