@@ -4,7 +4,7 @@
 ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=main/vim
 ARG PACKAGE_NAME=vim
-ARG PACKAGE_VERSION=9.1.1415
+ARG PACKAGE_VERSION=9.1.1566
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -62,6 +62,8 @@ COPY --from=build /usr/local/bin/vim /usr/local/bin/xxd /
 ENTRYPOINT ["/vim"]
 
 ########## CHANGES ##########
+# 20251015:
+#   * Upgrade vim to 9.1.1566
 # 20250531:
 #   * Upgrade vim to 9.1.1415
 #   * Commit APKBUILD to git for reproducible build
