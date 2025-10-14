@@ -4,7 +4,7 @@
 ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=main/postgresql17
 ARG PACKAGE_NAME=postgresql17
-ARG PACKAGE_VERSION=17.5
+ARG PACKAGE_VERSION=17.6
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -86,6 +86,8 @@ COPY --from=build /usr/local/bin/psql /usr/local/bin/pg_dump /
 ENTRYPOINT ["/psql"]
 
 ########## CHANGES ##########
+# 20251015:
+#   * Upgrade postgresql17 to 17.6
 # 20250531:
 #   * Upgrade postgresql17 to 17.5
 #   * Commit APKBUILD to git for reproducible build
