@@ -4,7 +4,7 @@
 ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=main/curl
 ARG PACKAGE_NAME=curl
-ARG PACKAGE_VERSION=8.14.0
+ARG PACKAGE_VERSION=8.14.1
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -72,6 +72,8 @@ COPY --from=build /usr/local/bin/curl /
 ENTRYPOINT ["/curl"]
 
 ########## CHANGES ##########
+# 20251015:
+#   * Upgrade curl to 8.14.1
 # 20250531:
 #   * Upgrade curl to 8.14.0
 #   * Commit APKBUILD to git for reproducible build
