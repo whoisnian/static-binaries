@@ -4,7 +4,7 @@
 ARG ALPINE_VERSION=3.22
 ARG PACKAGE_PATH=main/mariadb
 ARG PACKAGE_NAME=mariadb
-ARG PACKAGE_VERSION=11.4.5
+ARG PACKAGE_VERSION=11.4.8
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -84,6 +84,8 @@ COPY --from=build /usr/local/bin/mariadb /usr/local/bin/mariadb-dump /
 ENTRYPOINT ["/mariadb"]
 
 ########## CHANGES ##########
+# 20251015:
+#   * Upgrade mariadb to 11.4.8
 # 20250531:
 #   * Upgrade alpine image to 3.22
 #   * Fix cmake generation error because of pcre2-static split
