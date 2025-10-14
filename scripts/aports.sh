@@ -34,6 +34,7 @@ function reset_and_pull_extra_for() {
 [ $ENABLE_DEBUG -eq 1 ] && set -x
 
 reset_and_pull_as_aports community/fio
+reset_and_pull_as_aports community/libqrencode
 reset_and_pull_as_aports community/redis
 reset_and_pull_as_aports main/7zip
 reset_and_pull_as_aports main/curl

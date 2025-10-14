@@ -16,6 +16,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - run: docker build -o=dist community/fio
+      - run: docker build -o=dist community/libqrencode
       - run: docker build -o=dist community/redis
       - run: docker build -o=dist main/7zip
       - run: docker build -o=dist main/curl
