@@ -71,6 +71,29 @@ Last build: `2025-10-14T18:08:12Z` with Alpine Linux `v3.22`
 * kernel: `uname --kernel-release`
 * libc: `ldd --version`
 
+## Development
+```sh
+# use docker as build environment
+mkdir -p src-gitignore apk-gitignore archive-gitignore
+docker run --rm -it \
+  -v ./src-gitignore:/src \
+  -v ./apk-gitignore:/var/cache/apk \
+  -v ./archive-gitignore:/var/cache/distfiles \
+  alpine:3.22 sh
+
+# prepare development dependencies
+ln -s /var/cache/apk /etc/apk/cache
+apk upgrade && apk add alpine-sdk git nano
+git clone https://github.com/whoisnian/static-binaries.git /src
+
+# example: build htop using original APKBUILD
+cd /src/main/htop/aports
+abuild -F deps
+abuild -F fetch verify unpack prepare mkusers build package
+
+./pkg/htop/usr/bin/htop --help
+```
+
 ## Reference
 * [Creating an Alpine package](https://wiki.alpinelinux.org/wiki/Creating_an_Alpine_package)
 * [Alpine Linux aports repository](https://gitlab.alpinelinux.org/alpine/aports)
