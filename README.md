@@ -44,27 +44,31 @@ Last build: `2025-10-14T18:08:12Z` with Alpine Linux `v3.22`
 ## Tested Linux
 | name         | arch    | kernel                        | libc       |
 | ------------ | ------- | ----------------------------- | ---------- |
-| Arch Linux   | x86_64  | 6.14.7-arch2-1                | glibc 2.41 |
-| Debian 12    | x86_64  | 6.1.0-37-cloud-amd64          | glibc 2.36 |
-| Debian 11    | x86_64  | 5.10.0-35-cloud-amd64         | glibc 2.31 |
-| Ubuntu 24.04 | x86_64  | 6.8.0-60-generic              | glibc 2.39 |
-| Ubuntu 22.04 | x86_64  | 5.15.0-140-generic            | glibc 2.35 |
+| Arch Linux   | x86_64  | 6.17.3-arch2-1                | glibc 2.42 |
+| Debian 13    | x86_64  | 6.12.48+deb13-cloud-amd64     | glibc 2.41 |
+| Debian 12    | x86_64  | 6.1.0-40-cloud-amd64          | glibc 2.36 |
+| Debian 11    | x86_64  | 5.10.0-36-cloud-amd64         | glibc 2.31 |
+| Ubuntu 24.04 | x86_64  | 6.8.0-85-generic              | glibc 2.39 |
+| Ubuntu 22.04 | x86_64  | 5.15.0-160-generic            | glibc 2.35 |
 | Ubuntu 20.04 | x86_64  | 5.4.0-216-generic             | glibc 2.31 |
 | Ubuntu 18.04 | x86_64  | 4.15.0-212-generic            | glibc 2.27 |
-| Alpine 3.21  | x86_64  | 6.12.8-0-virt                 | musl 1.2.5 |
+| Alpine 3.22  | x86_64  | 6.12.51-0-virt                | musl 1.2.5 |
+| Alpine 3.21  | x86_64  | 6.12.51-0-virt                | musl 1.2.5 |
 | CentOS 7     | x86_64  | 3.10.0-1160.80.1.el7.x86_64   | glibc 2.17 |
 | Rocky 8.10   | x86_64  | 4.18.0-553.el8_10.x86_64      | glibc 2.28 |
-| Rocky 9.5    | x86_64  | 5.14.0-503.14.1.el9_5.x86_64  | glibc 2.34 |
-| Debian 12    | aarch64 | 6.1.0-37-cloud-arm64          | glibc 2.36 |
-| Debian 11    | aarch64 | 5.10.0-35-cloud-arm64         | glibc 2.31 |
-| Ubuntu 24.04 | aarch64 | 6.8.0-60-generic              | glibc 2.39 |
-| Ubuntu 22.04 | aarch64 | 5.15.0-140-generic            | glibc 2.35 |
+| Rocky 9.6    | x86_64  | 5.14.0-570.17.1.el9_6.x86_64  | glibc 2.34 |
+| Debian 13    | aarch64 | 6.12.48+deb13-cloud-arm64     | glibc 2.41 |
+| Debian 12    | aarch64 | 6.1.0-40-cloud-arm64          | glibc 2.36 |
+| Debian 11    | aarch64 | 5.10.0-36-cloud-arm64         | glibc 2.31 |
+| Ubuntu 24.04 | aarch64 | 6.8.0-85-generic              | glibc 2.39 |
+| Ubuntu 22.04 | aarch64 | 5.15.0-160-generic            | glibc 2.35 |
 | Ubuntu 20.04 | aarch64 | 5.4.0-216-generic             | glibc 2.31 |
 | Ubuntu 18.04 | aarch64 | 4.15.0-212-generic            | glibc 2.27 |
-| Alpine 3.21  | aarch64 | 6.12.8-0-virt                 | musl 1.2.5 |
+| Alpine 3.22  | aarch64 | 6.12.51-0-virt                | musl 1.2.5 |
+| Alpine 3.21  | aarch64 | 6.12.51-0-virt                | musl 1.2.5 |
 | CentOS 7     | aarch64 | 4.18.0-348.20.1.el7.aarch64   | glibc 2.17 |
 | Rocky 8.10   | aarch64 | 4.18.0-553.el8_10.aarch64     | glibc 2.28 |
-| Rocky 9.5    | aarch64 | 5.14.0-503.14.1.el9_5.aarch64 | glibc 2.34 |
+| Rocky 9.6    | aarch64 | 5.14.0-570.17.1.el9_6.aarch64 | glibc 2.34 |
 
 * name: `cat /etc/os-release`
 * arch: `uname --machine`
