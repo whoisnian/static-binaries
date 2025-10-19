@@ -10,9 +10,9 @@
 ########## environment variables ##########
 ENABLE_DEBUG=0
 _BIN_SUFFIX='_v20251015.0_linux_amd64'
-REDIS_CONN_OPTS=''    # '-u redis://testpw@127.0.0.1:6379'
-MYSQL_CONN_OPTS=''    # '-h 127.0.0.1 -u root -ptestpw'
-POSTGRES_CONN_OPTS='' # 'postgresql://postgres:testpw@127.0.0.1/postgres'
+REDIS_CONN_OPTS='-u redis://testpw@192.168.122.1:6379'
+MYSQL_CONN_OPTS='-h 192.168.122.1 -u root -ptestpw'
+POSTGRES_CONN_OPTS='postgresql://postgres:testpw@192.168.122.1/postgres'
 TEMP_HTTP_PORT=18080
 TEMP_IPERF3_PORT=$(($TEMP_HTTP_PORT + 1))
 TEMP_SOCAT_PORT=$(($TEMP_HTTP_PORT + 2))
@@ -441,8 +441,8 @@ assert_grep 'Dump completed on' "$OUTPUT"
 log_i 'test custom/mysql84 success'
 
 ########## ########## ##########
-[ $START_REDIS_DOCKER -eq 1 ] && sudo docker stop "$REDIS_CONTAINER_ID" >/dev/null
-[ $START_MYSQL_DOCKER -eq 1 ] && sudo docker stop "$MYSQL_CONTAINER_ID" >/dev/null
-[ $START_POSTGRES_DOCKER -eq 1 ] && sudo docker stop "$POSTGRES_CONTAINER_ID" >/dev/null
+# [ $START_REDIS_DOCKER -eq 1 ] && sudo docker stop "$REDIS_CONTAINER_ID" >/dev/null
+# [ $START_MYSQL_DOCKER -eq 1 ] && sudo docker stop "$MYSQL_CONTAINER_ID" >/dev/null
+# [ $START_POSTGRES_DOCKER -eq 1 ] && sudo docker stop "$POSTGRES_CONTAINER_ID" >/dev/null
 
 log_i 'all tests success'
