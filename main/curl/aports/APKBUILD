@@ -6,10 +6,10 @@
 # and Rust is not yet available on all architectures.  Any commit which changes
 # this aport from arch=all WILL be reverted.
 
-maintainer="fossdd <fossdd@pwned.life>"
+maintainer="Achill Gilgenast <achill@achill.org>"
 pkgname=curl
-pkgver=8.14.1
-pkgrel=2
+pkgver=8.17.0
+pkgrel=1
 pkgdesc="URL retrival utility and library"
 url="https://curl.se/"
 arch="all"
@@ -21,6 +21,7 @@ depends_dev="
 	libidn2-dev
 	libpsl-dev
 	nghttp2-dev
+	nghttp3-dev
 	openssl-dev>3
 	zlib-dev
 	zstd-dev
@@ -33,9 +34,8 @@ if [ -z "$BOOTSTRAP" ] && [ -z "$APORTS_BOOTSTRAP" ]; then
 	subpackages="$subpackages $pkgname-zsh-completion $pkgname-fish-completion"
 fi
 source="https://curl.se/download/curl-$pkgver.tar.xz
-	fix-returncode-with-retry.patch
-	CVE-2025-9086.patch
-	CVE-2025-10148.patch
+	reg-19383.patch
+	reg-19408.patch
 	"
 options="net" # Required for running tests
 if [ -n "$BOOTSTRAP" ] || [ -n "$APORTS_BOOTSTRAP" ]; then
@@ -45,7 +45,9 @@ provides="wcurl=$pkgver-r$pkgrel"
 replaces="wcurl"
 
 # secfixes:
-#   8.14.1-r2:
+#   8.17.0-r0:
+#     - CVE-2025-10966
+#   8.16.0-r0:
 #     - CVE-2025-9086
 #     - CVE-2025-10148
 #   8.14.1-r0:
@@ -230,8 +232,10 @@ build() {
 		--enable-static \
 		--with-libidn2 \
 		--with-nghttp2 \
+		--with-nghttp3 \
 		--with-openssl \
-		--with-ca-bundle=/etc/ssl/cert.pem \
+		--with-openssl-quic \
+		--with-ca-bundle=/etc/ssl/certs/ca-certificates.crt \
 		--with-ca-path=/etc/ssl/certs \
 		--with-zsh-functions-dir \
 		--with-fish-functions-dir \
@@ -278,8 +282,7 @@ dev() {
 }
 
 sha512sums="
-7f6eae04cc23c50fc41d448aa28dfa59141018009e42c5b1e3f4e0d40c0633460b4e6eec05dfc290f7953671096abfa70a8b5443fccdd3f1be6be32ac10b31d9  curl-8.14.1.tar.xz
-4324a97b532b9d9c35fa79b475aab36c2a47ad49c676c8e2129feedc279501e712fad100af76a98c3ffb8b951d8c591f4e45dee6e6e85d25189223a10aa3f733  fix-returncode-with-retry.patch
-713b42dbab208402db657da6002e55d87fc9d106091293e56a51a1fb64b55d780f2e97fe95b689ee69102f11178330eac824c364a5fadb1cbfd1efe3ac3443db  CVE-2025-9086.patch
-a6a5a93e121c9c754fa26a0ecf02dba33a913ba194281eb8f41f30d0ebe14e0a953a73a9d0c2d4a4f9a983951ad159c12ff54603925ff98eea78f726b55ccbbc  CVE-2025-10148.patch
+fc6349def40c3c259de2a568631507df17dff83e78a2edbb93f069586dce594439fdc88bef7ce2bed7491f35800b8c0c181c8c88e6ef656cc3c18f9834681eca  curl-8.17.0.tar.xz
+1a0a11e3b2129cf69c450d697ece5755875fbc851b43c2ce75831d835c64834c65606a01d297e5c563f7c918fa24d36cea5a655e0800d0431e774a1ef25e14e4  reg-19383.patch
+57e47c9ab23557c4e7816ba8b61640b3ef438cd0e46879a92d809b7da6c58dbbcc5b47a1f6c27dedfebdf5abe66a89ecdb49ee859e4286b5b0b132e1ecff9e55  reg-19408.patch
 "

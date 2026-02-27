@@ -2,7 +2,7 @@
 # Maintainer: Celeste <cielesti@protonmail.com>
 maintainer="Celeste <cielesti@protonmail.com>"
 pkgname=nano
-pkgver=8.4
+pkgver=8.7
 pkgrel=0
 pkgdesc="Enhanced clone of the Pico text editor"
 url="https://www.nano-editor.org/"
@@ -48,5 +48,5 @@ syntax() {
 }
 
 sha512sums="
-1b8258e341a8722114b24af9d4676fbd8a91dc3639786a81bcd192a7b4fbca87581ab8ebe49493dfb3599ae90b59f4df8ae2a4ee0c0c7ccec9a49b563c82f44a  nano-8.4.tar.xz
+0aac5b1708b05a882cba57f718154e42a6cd8a57f1e1c13c76598fe85645c49703f0c17d2e650da90348eb60c2bdbe349925415b6511c27e5b1bea77d107ab37  nano-8.7.tar.xz
 "

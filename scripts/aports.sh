@@ -9,7 +9,7 @@
 
 ########## environment variables ##########
 ENABLE_DEBUG=0
-ALPINE_VERSION="3.22"
+ALPINE_VERSION="3.23"
 SCRIPT_DIR=$(dirname "$0")
 SOURCE_DIR="$SCRIPT_DIR/.."
 
