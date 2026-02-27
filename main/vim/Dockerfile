@@ -32,7 +32,7 @@ ARG EXTRA_DEPS="ncurses-static"
 COPY aports "${PACKAGE_PATH}"
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
   cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
-  abuild -F deps && apk add ${EXTRA_DEPS}
+  BUILD_GVIM=false abuild -F deps && apk add ${EXTRA_DEPS}
 
 # STEP-2: build executable
 RUN --mount=type=cache,target=/var/cache/distfiles <<EOT
@@ -40,9 +40,7 @@ RUN --mount=type=cache,target=/var/cache/distfiles <<EOT
   cd "${PACKAGE_PATH}"
   export CFLAGS=-static && export LDFLAGS=-static
   sed -i APKBUILD -e 's|--enable-\([a-zA-Z0-9]\+\)interp=[^ ]\+ |--enable-\1interp=no |'
-  sed -i APKBUILD -e '/cp -r "\$builddir" "\$builddir"-gvim/d'
-  sed -i APKBUILD -e '/cd "\$builddir"-gvim/,/make$/d'
-  abuild -F fetch verify unpack prepare mkusers build package
+  BUILD_GVIM=false abuild -F fetch verify unpack prepare mkusers build package
 EOT
 
 # STEP-3: test executable
