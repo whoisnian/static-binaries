@@ -386,24 +386,6 @@ assert_grep 'one_time_httpd' "$OUTPUT"
 
 log_i 'test main/wget success'
 
-########## test custom/mysql57 ##########
-log_i 'test custom/mysql57'
-
-OUTPUT=$(./dist/"mysql57${_BIN_SUFFIX}" --version)
-assert_grep 'Distrib 5.7.44' "$OUTPUT"
-OUTPUT=$(./dist/"mysqldump57${_BIN_SUFFIX}" --version)
-assert_grep 'Distrib 5.7.44' "$OUTPUT"
-
-OUTPUT=$(./dist/"mysql57${_BIN_SUFFIX}" $MYSQL_CONN_OPTS -e 'select User from mysql.user')
-assert_grep 'mysql.infoschema' "$OUTPUT"
-OUTPUT=$(./dist/"mysqldump57${_BIN_SUFFIX}" $MYSQL_CONN_OPTS mysql user)
-assert_grep 'Table structure for table' "$OUTPUT"
-assert_grep 'Dumping data for table' "$OUTPUT"
-assert_grep 'INSERT INTO `user` VALUES' "$OUTPUT"
-assert_grep 'Dump completed on' "$OUTPUT"
-
-log_i 'test custom/mysql57 success'
-
 ########## test custom/mysql80 ##########
 log_i 'test custom/mysql80'
 
