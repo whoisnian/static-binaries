@@ -1,5 +1,5 @@
 # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mysql57
-# https://gitlab.alpinelinux.org/alpine/aports/-/blob/3.22-stable/main/mariadb/APKBUILD
+# https://gitlab.alpinelinux.org/alpine/aports/-/blob/3.23-stable/main/mariadb/APKBUILD
 pkgname=mysql57
 _pkgname=mysql
 pkgver=5.7.44

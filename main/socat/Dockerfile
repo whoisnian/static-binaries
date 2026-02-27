@@ -1,7 +1,7 @@
-# syntax=docker.io/docker/dockerfile:1.16
+# syntax=docker.io/docker/dockerfile:1.21
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.22
+ARG ALPINE_VERSION=3.23
 ARG PACKAGE_PATH=main/socat
 ARG PACKAGE_NAME=socat
 ARG PACKAGE_VERSION=1.8.0.3
@@ -46,7 +46,7 @@ EOT
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
   cd "${PACKAGE_PATH}" && apk del ${EXTRA_DEPS} && abuild -F undeps && \
   "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/socat1" -h && \
-  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/socat1" | grep -q 'statically linked' && \
+  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/socat1" | grep -q 'static-pie linked\|statically linked' && \
   strip "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/socat1" -o /usr/local/bin/socat
 
 # STEP-4: export executable
@@ -56,6 +56,8 @@ COPY --from=build /usr/local/bin/socat /
 ENTRYPOINT ["/socat"]
 
 ########## CHANGES ##########
+# 20260227:
+#   * Upgrade alpine image to 3.23
 # 20250531:
 #   * Upgrade socat to 1.8.0.3
 #   * Commit APKBUILD to git for reproducible build

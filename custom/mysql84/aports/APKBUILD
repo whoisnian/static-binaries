@@ -1,8 +1,8 @@
 # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mysql84
-# https://gitlab.alpinelinux.org/alpine/aports/-/blob/3.22-stable/main/mariadb/APKBUILD
+# https://gitlab.alpinelinux.org/alpine/aports/-/blob/3.23-stable/main/mariadb/APKBUILD
 pkgname=mysql84
 _pkgname=mysql
-pkgver=8.4.5
+pkgver=8.4.8
 pkgrel=0
 pkgdesc="Fast SQL database server, community edition, v8.4"
 url="https://www.mysql.com/products/community/"
@@ -59,5 +59,5 @@ package() {
 }
 
 sha512sums="
-d5353bbc618fb6ec3658773d834942f5bfd11f6f5d3fb4778aa684b970a6143d5e96919ba2311bfb00faf3882da307c62b9370aca8f41136ec129d5fa06bcf5c  mysql-8.4.5.tar.gz
+4e95db1a1c2bf99240d846e690784616b15fb3137b4512072ad71a40911c5bb72c0b0354cc588aab7cd5d396e1d1c709a63d9cd09ae664d8fe6ed0f7683e4cf6  mysql-8.4.8.tar.gz
 "

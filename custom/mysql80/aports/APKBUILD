@@ -1,8 +1,8 @@
 # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mysql80
-# https://gitlab.alpinelinux.org/alpine/aports/-/blob/3.22-stable/main/mariadb/APKBUILD
+# https://gitlab.alpinelinux.org/alpine/aports/-/blob/3.23-stable/main/mariadb/APKBUILD
 pkgname=mysql80
 _pkgname=mysql
-pkgver=8.0.42
+pkgver=8.0.45
 pkgrel=0
 pkgdesc="Fast SQL database server, community edition, v8.0"
 url="https://www.mysql.com/products/community/"
@@ -60,5 +60,5 @@ package() {
 }
 
 sha512sums="
-66776b5a1be603f215d4b227d395e72476bde76fdc0ba5ffdcfcb851a8261f1428c23c8abf1edca616765ee8254354e9092eaadde5ed43e7e2daa2ac265a0b23  mysql-boost-8.0.42.tar.gz
+9ab52da87e9c1570328080b802f8c9ca1bcbb08e489e1d6cc3282b994cfd07099a0cf5eee420faa684e8372aee66495b34b633224dca98cd5caa8f4a93e500a4  mysql-boost-8.0.45.tar.gz
 "

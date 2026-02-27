@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.16
+# syntax=docker.io/docker/dockerfile:1.21
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.22
+ARG ALPINE_VERSION=3.23
 ARG PACKAGE_PATH=main/vim
 ARG PACKAGE_NAME=vim
-ARG PACKAGE_VERSION=9.1.1566
+ARG PACKAGE_VERSION=9.1.2132
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -49,10 +49,10 @@ EOT
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
   cd "${PACKAGE_PATH}" && apk del ${EXTRA_DEPS} && abuild -F undeps && \
   "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/vim" -h && \
-  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/vim" | grep -q 'statically linked' && \
+  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/vim" | grep -q 'static-pie linked\|statically linked' && \
   strip "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/vim" -o /usr/local/bin/vim && \
   "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/xxd" -v && \
-  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/xxd" | grep -q 'statically linked' && \
+  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/xxd" | grep -q 'static-pie linked\|statically linked' && \
   strip "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/xxd" -o /usr/local/bin/xxd
 
 # STEP-4: export executable
@@ -62,6 +62,9 @@ COPY --from=build /usr/local/bin/vim /usr/local/bin/xxd /
 ENTRYPOINT ["/vim"]
 
 ########## CHANGES ##########
+# 20260227:
+#   * Upgrade vim to 9.1.2132
+#   * Upgrade alpine image to 3.23
 # 20251015:
 #   * Upgrade vim to 9.1.1566
 # 20250531:

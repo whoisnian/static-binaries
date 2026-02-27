@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.16
+# syntax=docker.io/docker/dockerfile:1.21
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.22
+ARG ALPINE_VERSION=3.23
 ARG PACKAGE_PATH=main/curl
 ARG PACKAGE_NAME=curl
-ARG PACKAGE_VERSION=8.14.1
+ARG PACKAGE_VERSION=8.17.0
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -62,7 +62,7 @@ EOT
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
   cd "${PACKAGE_PATH}" && apk del ${EXTRA_DEPS} && abuild -F undeps && \
   "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/curl" --help && \
-  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/curl" | grep -q 'statically linked' && \
+  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/curl" | grep -q 'static-pie linked\|statically linked' && \
   strip "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/curl" -o /usr/local/bin/curl
 
 # STEP-4: export executable
@@ -72,6 +72,9 @@ COPY --from=build /usr/local/bin/curl /
 ENTRYPOINT ["/curl"]
 
 ########## CHANGES ##########
+# 20260227:
+#   * Upgrade curl to 8.17.0
+#   * Upgrade alpine image to 3.23
 # 20251015:
 #   * Upgrade curl to 8.14.1
 # 20250531:

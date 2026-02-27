@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.16
+# syntax=docker.io/docker/dockerfile:1.21
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.22
+ARG ALPINE_VERSION=3.23
 ARG PACKAGE_PATH=main/mariadb
 ARG PACKAGE_NAME=mariadb
-ARG PACKAGE_VERSION=11.4.8
+ARG PACKAGE_VERSION=11.4.9
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -71,10 +71,10 @@ EOT
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
   cd "${PACKAGE_PATH}" && apk del ${EXTRA_DEPS} && abuild -F undeps && \
   "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/mariadb" --help && \
-  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/mariadb" | grep -q 'statically linked' && \
+  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/mariadb" | grep -q 'static-pie linked\|statically linked' && \
   strip "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/mariadb" -o /usr/local/bin/mariadb && \
   "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/mariadb-dump" --help && \
-  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/mariadb-dump" | grep -q 'statically linked' && \
+  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/mariadb-dump" | grep -q 'static-pie linked\|statically linked' && \
   strip "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/mariadb-dump" -o /usr/local/bin/mariadb-dump
 
 # STEP-4: export executable
@@ -84,6 +84,9 @@ COPY --from=build /usr/local/bin/mariadb /usr/local/bin/mariadb-dump /
 ENTRYPOINT ["/mariadb"]
 
 ########## CHANGES ##########
+# 20260227:
+#   * Upgrade mariadb to 11.4.9
+#   * Upgrade alpine image to 3.23
 # 20251015:
 #   * Upgrade mariadb to 11.4.8
 # 20250531:

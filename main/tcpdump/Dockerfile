@@ -1,7 +1,7 @@
-# syntax=docker.io/docker/dockerfile:1.16
+# syntax=docker.io/docker/dockerfile:1.21
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.22
+ARG ALPINE_VERSION=3.23
 ARG PACKAGE_PATH=main/tcpdump
 ARG PACKAGE_NAME=tcpdump
 ARG PACKAGE_VERSION=4.99.5
@@ -51,7 +51,7 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
   cd "${PACKAGE_PATH}" && apk del ${EXTRA_DEPS} && abuild -F undeps && \
   "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/tcpdump" -h && \
   "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/tcpdump" -D && \
-  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/tcpdump" | grep -q 'statically linked' && \
+  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/tcpdump" | grep -q 'static-pie linked\|statically linked' && \
   strip "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/tcpdump" -o /usr/local/bin/tcpdump
 
 # STEP-4: export executable
@@ -61,6 +61,8 @@ COPY --from=build /usr/local/bin/tcpdump /
 ENTRYPOINT ["/tcpdump"]
 
 ########## CHANGES ##########
+# 20260227:
+#   * Upgrade alpine image to 3.23
 # 20250531:
 #   * Upgrade alpine image to 3.22
 #   * Commit APKBUILD to git for reproducible build

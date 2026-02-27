@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.16
+# syntax=docker.io/docker/dockerfile:1.21
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.22
+ARG ALPINE_VERSION=3.23
 ARG PACKAGE_PATH=community/redis
 ARG PACKAGE_NAME=redis
-ARG PACKAGE_VERSION=8.0.4
+ARG PACKAGE_VERSION=8.4.2
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -55,7 +55,7 @@ EOT
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
   cd "${PACKAGE_PATH}" && apk del ${EXTRA_DEPS} && abuild -F undeps && \
   "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/redis-cli" --help && \
-  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/redis-cli" | grep -q 'statically linked' && \
+  file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/redis-cli" | grep -q 'static-pie linked\|statically linked' && \
   strip "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/redis-cli" -o /usr/local/bin/redis-cli
 
 # STEP-4: export executable
@@ -65,6 +65,9 @@ COPY --from=build /usr/local/bin/redis-cli /
 ENTRYPOINT ["/redis-cli"]
 
 ########## CHANGES ##########
+# 20260227:
+#   * Upgrade redis to 8.4.2
+#   * Upgrade alpine image to 3.23
 # 20251015:
 #   * Upgrade redis to 8.0.4
 # 20250531:
