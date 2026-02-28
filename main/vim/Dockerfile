@@ -10,7 +10,7 @@ FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
 # redeclare in build stage to inherit arguments from global scope
 # https://docs.docker.com/build/building/variables/#scoping
-ARG BUILDARCH
+ARG TARGETARCH
 ARG ALPINE_VERSION
 ARG PACKAGE_PATH
 ARG PACKAGE_NAME
@@ -18,7 +18,7 @@ ARG PACKAGE_VERSION
 
 # alpine-sdk: abuild git build-base(binutils file gcc g++ make libc-dev fortify-headers patch)
 WORKDIR /src
-RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
+RUN --mount=type=cache,target=/var/cache/apk,id=apk-$TARGETARCH,sharing=locked \
   ln -s /var/cache/apk /etc/apk/cache && apk upgrade && apk add alpine-sdk
 
 # vim depends (2)
@@ -30,7 +30,7 @@ ARG EXTRA_DEPS="ncurses-static"
 
 # STEP-1: install dependencies
 COPY aports "${PACKAGE_PATH}"
-RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
+RUN --mount=type=cache,target=/var/cache/apk,id=apk-$TARGETARCH,sharing=locked \
   cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
   BUILD_GVIM=false abuild -F deps && apk add ${EXTRA_DEPS}
 
@@ -44,7 +44,7 @@ RUN --mount=type=cache,target=/var/cache/distfiles <<EOT
 EOT
 
 # STEP-3: test executable
-RUN --mount=type=cache,target=/var/cache/apk,id=apk-$BUILDARCH,sharing=locked \
+RUN --mount=type=cache,target=/var/cache/apk,id=apk-$TARGETARCH,sharing=locked \
   cd "${PACKAGE_PATH}" && apk del ${EXTRA_DEPS} && abuild -F undeps && \
   "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/vim" -h && \
   file "/src/${PACKAGE_PATH}/pkg/${PACKAGE_NAME}/usr/bin/vim" | grep -q 'static-pie linked\|statically linked' && \
