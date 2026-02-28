@@ -68,3 +68,5 @@ jobs:
         with:
           files: dist/*
           generate_release_notes: true
+
+      - run: ./scripts/gen_downloads.sh "$GITHUB_REF_NAME"

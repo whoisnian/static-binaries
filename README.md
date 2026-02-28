@@ -75,6 +75,16 @@ Last build: `2025-10-14T18:08:12Z` with Alpine Linux `v3.22`
 * kernel: `uname --kernel-release`
 * libc: `ldd --version`
 
+## Build Release
+```sh
+# example: build static wget binary for current platform
+docker build -o=dist main/wget
+
+# example: build for another platform (not fully tested, use with caution)
+docker build --platform linux/386 -o=dist main/wget     # build linux/386 on amd64 host
+docker build --platform linux/arm/v7 -o=dist main/wget  # build linux/arm/v7 on arm64 host
+```
+
 ## Development
 ```sh
 # use docker as build environment
@@ -90,9 +100,11 @@ ln -s /var/cache/apk /etc/apk/cache
 apk upgrade && apk add alpine-sdk git nano
 git clone https://github.com/whoisnian/static-binaries.git /src
 
-# example: build htop using original APKBUILD
+# example: manually run htop build commands in the Dockerfile
 cd /src/main/htop/aports
 abuild -F deps
+apk add ncurses-static
+sed -i APKBUILD -e 's|./configure|./configure --enable-static|'
 abuild -F fetch verify unpack prepare mkusers build package
 
 ./pkg/htop/usr/bin/htop --help
