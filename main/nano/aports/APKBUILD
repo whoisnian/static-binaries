@@ -1,8 +1,8 @@
 # Contributor: Michael Mason <ms13sp@gmail.com>
-# Maintainer: Celeste <cielesti@protonmail.com>
-maintainer="Celeste <cielesti@protonmail.com>"
+# Maintainer: mio <miyopan@e.email>
+maintainer="mio <miyopan@e.email>"
 pkgname=nano
-pkgver=8.7
+pkgver=9.2
 pkgrel=0
 pkgdesc="Enhanced clone of the Pico text editor"
 url="https://www.nano-editor.org/"
@@ -48,5 +48,5 @@ syntax() {
 }
 
 sha512sums="
-0aac5b1708b05a882cba57f718154e42a6cd8a57f1e1c13c76598fe85645c49703f0c17d2e650da90348eb60c2bdbe349925415b6511c27e5b1bea77d107ab37  nano-8.7.tar.xz
+944156519cf981b08df46c248c323ba41eb2063ed804d070d7ee8639cbbe6bf68c038c8f0c094ef28e3a8e569ce321f4494617066c69c7585af41617b08e6dbe  nano-9.2.tar.xz
 "

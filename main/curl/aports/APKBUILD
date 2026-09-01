@@ -1,16 +1,11 @@
 # Contributor: Sergei Lukin <sergej.lukin@gmail.com>
 # Contributor: Valery Kartel <valery.kartel@gmail.com>
 # Contributor: Łukasz Jendrysik <scadu@yandex.com>
-
-# RESTRICTED: Do NOT enable the rustls or hyper backends, as they depend on Rust
-# and Rust is not yet available on all architectures.  Any commit which changes
-# this aport from arch=all WILL be reverted.
-
 maintainer="Achill Gilgenast <achill@achill.org>"
 pkgname=curl
-pkgver=8.17.0
-pkgrel=1
-pkgdesc="URL retrival utility and library"
+pkgver=8.22.0
+pkgrel=0
+pkgdesc="URL retrieval utility and library"
 url="https://curl.se/"
 arch="all"
 license="curl"
@@ -21,7 +16,6 @@ depends_dev="
 	libidn2-dev
 	libpsl-dev
 	nghttp2-dev
-	nghttp3-dev
 	openssl-dev>3
 	zlib-dev
 	zstd-dev
@@ -33,10 +27,7 @@ subpackages="$pkgname-dbg $pkgname-static $pkgname-doc $pkgname-dev libcurl"
 if [ -z "$BOOTSTRAP" ] && [ -z "$APORTS_BOOTSTRAP" ]; then
 	subpackages="$subpackages $pkgname-zsh-completion $pkgname-fish-completion"
 fi
-source="https://curl.se/download/curl-$pkgver.tar.xz
-	reg-19383.patch
-	reg-19408.patch
-	"
+source="https://curl.se/download/curl-$pkgver.tar.xz"
 options="net" # Required for running tests
 if [ -n "$BOOTSTRAP" ] || [ -n "$APORTS_BOOTSTRAP" ]; then
 	options="$options !check" # remove python3 dependency
@@ -45,6 +36,54 @@ provides="wcurl=$pkgver-r$pkgrel"
 replaces="wcurl"
 
 # secfixes:
+#   8.22.0-r0:
+#     - CVE-2026-13608
+#     - CVE-2026-18924
+#     - CVE-2026-19931
+#     - CVE-2026-80229
+#     - CVE-2026-80230
+#     - CVE-2026-80231
+#     - CVE-2026-80255
+#     - CVE-2026-80256
+#     - CVE-2026-82208
+#     - CVE-2026-82209
+#   8.21.0-r0:
+#     - CVE-2026-10536
+#     - CVE-2026-11352
+#     - CVE-2026-11564
+#     - CVE-2026-11586
+#     - CVE-2026-11856
+#     - CVE-2026-12064
+#     - CVE-2026-8286
+#     - CVE-2026-8458
+#     - CVE-2026-8924
+#     - CVE-2026-8925
+#     - CVE-2026-8926
+#     - CVE-2026-8927
+#     - CVE-2026-8932
+#     - CVE-2026-9079
+#     - CVE-2026-9080
+#     - CVE-2026-9545
+#     - CVE-2026-9546
+#     - CVE-2026-9547
+#   8.20.0-r0:
+#     - CVE-2026-4873
+#     - CVE-2026-5545
+#     - CVE-2026-5773
+#     - CVE-2026-6253
+#     - CVE-2026-6276
+#     - CVE-2026-6429
+#     - CVE-2026-7009
+#     - CVE-2026-7168
+#   8.19.0-r0:
+#     - CVE-2026-1965
+#     - CVE-2026-3783
+#     - CVE-2026-3784
+#     - CVE-2026-3805
+#   8.18.0-r0:
+#     - CVE-2025-14017
+#     - CVE-2025-14524
+#     - CVE-2025-14819
 #   8.17.0-r0:
 #     - CVE-2025-10966
 #   8.16.0-r0:
@@ -220,6 +259,9 @@ replaces="wcurl"
 #     - CVE-2014-0139
 #   0:
 #     - CVE-2021-22897
+#     - CVE-2025-13034
+#     - CVE-2025-15079
+#     - CVE-2025-15224
 
 build() {
 	./configure \
@@ -232,9 +274,7 @@ build() {
 		--enable-static \
 		--with-libidn2 \
 		--with-nghttp2 \
-		--with-nghttp3 \
 		--with-openssl \
-		--with-openssl-quic \
 		--with-ca-bundle=/etc/ssl/certs/ca-certificates.crt \
 		--with-ca-path=/etc/ssl/certs \
 		--with-zsh-functions-dir \
@@ -282,7 +322,5 @@ dev() {
 }
 
 sha512sums="
-fc6349def40c3c259de2a568631507df17dff83e78a2edbb93f069586dce594439fdc88bef7ce2bed7491f35800b8c0c181c8c88e6ef656cc3c18f9834681eca  curl-8.17.0.tar.xz
-1a0a11e3b2129cf69c450d697ece5755875fbc851b43c2ce75831d835c64834c65606a01d297e5c563f7c918fa24d36cea5a655e0800d0431e774a1ef25e14e4  reg-19383.patch
-57e47c9ab23557c4e7816ba8b61640b3ef438cd0e46879a92d809b7da6c58dbbcc5b47a1f6c27dedfebdf5abe66a89ecdb49ee859e4286b5b0b132e1ecff9e55  reg-19408.patch
+d6badf794e7a72760a353db73adb8b671804ce41619b401265b22dc8f6770ebeaa5adb3c4d1312722082c56013612a382884e025cca49397a8ab47577dd659f7  curl-8.22.0.tar.xz
 "
