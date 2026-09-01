@@ -9,7 +9,7 @@
 
 ########## environment variables ##########
 ENABLE_DEBUG=0
-ALPINE_VERSION="3.23"
+ALPINE_VERSION="3.24"
 SCRIPT_DIR=$(dirname "$0")
 SOURCE_DIR="$SCRIPT_DIR/.."
 
@@ -36,6 +36,7 @@ function reset_and_pull_extra_for() {
 reset_and_pull_as_aports community/fio
 reset_and_pull_as_aports community/libqrencode
 reset_and_pull_as_aports community/redis
+reset_and_pull_as_aports community/vim
 reset_and_pull_as_aports main/7zip
 reset_and_pull_as_aports main/curl
 reset_and_pull_as_aports main/htop
@@ -50,9 +51,8 @@ reset_and_pull_as_aports main/pigz
 reset_and_pull_as_aports main/postgresql17
 reset_and_pull_as_aports main/procps-ng
 reset_and_pull_as_aports main/rsync
-reset_and_pull_extra_for main/rsync main/xxhash
+# reset_and_pull_extra_for main/rsync main/xxhash
 reset_and_pull_as_aports main/socat
 reset_and_pull_as_aports main/strace
 reset_and_pull_as_aports main/tcpdump
-reset_and_pull_as_aports main/vim
 reset_and_pull_as_aports main/wget

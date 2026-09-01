@@ -1,10 +1,10 @@
 # Contributor: Sergei Lukin <sergej.lukin@gmail.com>
 # Contributor: Łukasz Jendrysik <scadu@yandex.com>
 # Contributor: Sören Tempel <soeren+alpine@soeren-tempel.net>
-# Maintainer: Celeste <cielesti@protonmail.com>
-maintainer="Celeste <cielesti@protonmail.com>"
+# Maintainer: mio <miyopan@e.email>
+maintainer="mio <miyopan@e.email>"
 pkgname=vim
-pkgver=9.1.2132
+pkgver=9.2.1014
 pkgrel=0
 pkgdesc="Improved vi-style text editor"
 url="https://www.vim.org/"
@@ -27,7 +27,7 @@ subpackages="
 	$pkgname-common::noarch
 	xxd
 	"
-source="$pkgname-$pkgver.tar.gz::https://github.com/vim/vim/archive/refs/tags/v$pkgver.tar.gz
+source="https://github.com/vim/vim/archive/refs/tags/v$pkgver/vim-$pkgver.tar.gz
 	vimrc
 	"
 
@@ -47,6 +47,70 @@ if $BUILD_GVIM; then
 fi
 
 # secfixes:
+#   9.2.0854-r0:
+#     - CVE-2026-73071
+#     - CVE-2026-73072
+#     - CVE-2026-73073
+#     - CVE-2026-73076
+#   9.2.0843-r0:
+#     - CVE-2026-73070
+#     - CVE-2026-73074
+#     - CVE-2026-73075
+#     - CVE-2026-73077
+#     - CVE-2026-73078
+#   9.2.0747-r0:
+#     - CVE-2026-59856
+#   9.2.0735-r0:
+#     - CVE-2026-59858
+#   9.2.0725-r0:
+#     - CVE-2026-59857
+#   9.2.0699-r0:
+#     - CVE-2026-57455
+#     - CVE-2026-57456
+#   9.2.0680-r0:
+#     - CVE-2026-57453
+#     - CVE-2026-57454
+#   9.2.0677-r0:
+#     - CVE-2026-57451
+#     - CVE-2026-57452
+#   9.2.0663-r0:
+#     - CVE-2026-55892
+#     - CVE-2026-55895
+#   9.2.0602-r0:
+#     - CVE-2026-52860
+#   9.2.0567-r0:
+#     - CVE-2026-52859
+#   9.2.0498-r0:
+#     - CVE-2026-52858
+#   9.2.0481-r0:
+#     - CVE-2026-43961
+#     - CVE-2026-46483
+#   9.2.0452-r0:
+#     - CVE-2026-45130
+#   9.2.0437-r0:
+#     - CVE-2026-44656
+#   9.2.0389-r0:
+#     - CVE-2026-42307
+#   9.2.0357-r0:
+#     - CVE-2026-41411
+#   9.2.0321-r0:
+#     - CVE-2026-39881
+#   9.2.0280-r0:
+#     - CVE-2026-34982
+#     - CVE-2026-35177
+#   9.2.0272-r0:
+#     - CVE-2026-34714
+#   9.2.0219-r0:
+#     - CVE-2026-33412
+#   9.2.0140-r0:
+#     - CVE-2026-32249
+#   9.2.0078-r0:
+#     - CVE-2026-28417
+#     - CVE-2026-28418
+#     - CVE-2026-28419
+#     - CVE-2026-28420
+#     - CVE-2026-28421
+#     - CVE-2026-28422
 #   9.1.2132-r0:
 #     - CVE-2026-25749
 #   9.1.1202-r0:
@@ -339,6 +403,6 @@ xxd() {
 }
 
 sha512sums="
-3d481d4e9fb716efb4df925a6ef3b69af98a684a9507079ddecdf91e90830fee9f865389611dce2da2c90dae4f881f610d15d4657764e4684f27bce5d9013631  vim-9.1.2132.tar.gz
+4049aa47781d8ef9cc497d962313e4240ac24d7f7f7c99353d402e76cb381afad16b5311e11de124720cdc1a179dc6c13767385287362187f50b2829dcedea0c  vim-9.2.1014.tar.gz
 bb4ac5bd2862754e741e63d7b521fd9e0cb1ac19769b952672928fd26471e9486182cd8a46a7e6f25e5b87759106e642293534c5e90c3c3958308291acb26875  vimrc
 "
