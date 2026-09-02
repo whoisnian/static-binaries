@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.21
+# syntax=docker.io/docker/dockerfile:1.25
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.23
+ARG ALPINE_VERSION=3.24
 ARG PACKAGE_PATH=main/procps-ng
 ARG PACKAGE_NAME=procps-ng
-ARG PACKAGE_VERSION=4.0.5
+ARG PACKAGE_VERSION=4.0.6
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -58,6 +58,9 @@ COPY --from=build /usr/local/bin/ps /
 ENTRYPOINT ["/ps"]
 
 ########## CHANGES ##########
+# 20260901:
+#   * Upgrade procps-ng to 4.0.6
+#   * Upgrade alpine image to 3.24
 # 20260227:
 #   * Upgrade procps-ng to 4.0.5
 #   * Upgrade alpine image to 3.23

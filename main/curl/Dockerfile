@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.21
+# syntax=docker.io/docker/dockerfile:1.25
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.23
+ARG ALPINE_VERSION=3.24
 ARG PACKAGE_PATH=main/curl
 ARG PACKAGE_NAME=curl
-ARG PACKAGE_VERSION=8.17.0
+ARG PACKAGE_VERSION=8.22.0
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -72,6 +72,9 @@ COPY --from=build /usr/local/bin/curl /
 ENTRYPOINT ["/curl"]
 
 ########## CHANGES ##########
+# 20260901:
+#   * Upgrade curl to 8.22.0
+#   * Upgrade alpine image to 3.24
 # 20260227:
 #   * Upgrade curl to 8.17.0
 #   * Upgrade alpine image to 3.23

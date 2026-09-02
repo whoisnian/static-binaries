@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.21
+# syntax=docker.io/docker/dockerfile:1.25
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.23
+ARG ALPINE_VERSION=3.24
 ARG PACKAGE_PATH=main/iproute2
 ARG PACKAGE_NAME=iproute2
-ARG PACKAGE_VERSION=6.17.0
+ARG PACKAGE_VERSION=7.0.0
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -61,6 +61,9 @@ COPY --from=build /usr/local/bin/ss /
 ENTRYPOINT ["/ss"]
 
 ########## CHANGES ##########
+# 20260901:
+#   * Upgrade iproute2 to 7.0.0
+#   * Upgrade alpine image to 3.24
 # 20260227:
 #   * Upgrade iproute2 to 6.17.0
 #   * Upgrade alpine image to 3.23

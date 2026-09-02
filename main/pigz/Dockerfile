@@ -1,7 +1,7 @@
-# syntax=docker.io/docker/dockerfile:1.21
+# syntax=docker.io/docker/dockerfile:1.25
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.23
+ARG ALPINE_VERSION=3.24
 ARG PACKAGE_PATH=main/pigz
 ARG PACKAGE_NAME=pigz
 ARG PACKAGE_VERSION=2.8
@@ -54,6 +54,8 @@ COPY --from=build /usr/local/bin/pigz /
 ENTRYPOINT ["/pigz"]
 
 ########## CHANGES ##########
+# 20260901:
+#   * Upgrade alpine image to 3.24
 # 20260227:
 #   * Upgrade alpine image to 3.23
 # 20250531:

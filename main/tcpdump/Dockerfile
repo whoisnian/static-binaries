@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.21
+# syntax=docker.io/docker/dockerfile:1.25
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.23
+ARG ALPINE_VERSION=3.24
 ARG PACKAGE_PATH=main/tcpdump
 ARG PACKAGE_NAME=tcpdump
-ARG PACKAGE_VERSION=4.99.5
+ARG PACKAGE_VERSION=4.99.6
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -61,6 +61,9 @@ COPY --from=build /usr/local/bin/tcpdump /
 ENTRYPOINT ["/tcpdump"]
 
 ########## CHANGES ##########
+# 20260901:
+#   * Upgrade tcpdump to 4.99.6
+#   * Upgrade alpine image to 3.24
 # 20260227:
 #   * Upgrade alpine image to 3.23
 # 20250531:

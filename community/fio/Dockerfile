@@ -1,7 +1,7 @@
-# syntax=docker.io/docker/dockerfile:1.21
+# syntax=docker.io/docker/dockerfile:1.25
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.23
+ARG ALPINE_VERSION=3.24
 ARG PACKAGE_PATH=community/fio
 ARG PACKAGE_NAME=fio
 ARG PACKAGE_VERSION=3.41
@@ -56,6 +56,8 @@ COPY --from=build /usr/local/bin/fio /
 ENTRYPOINT ["/fio"]
 
 ########## CHANGES ##########
+# 20260901:
+#   * Upgrade alpine image to 3.24
 # 20260227:
 #   * Upgrade fio to 3.41
 #   * Upgrade alpine image to 3.23

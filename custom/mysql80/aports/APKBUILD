@@ -1,5 +1,5 @@
 # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mysql80
-# https://gitlab.alpinelinux.org/alpine/aports/-/blob/3.23-stable/main/mariadb/APKBUILD
+# https://gitlab.alpinelinux.org/alpine/aports/-/blob/3.24-stable/main/mariadb/APKBUILD
 pkgname=mysql80
 _pkgname=mysql
 pkgver=8.0.45

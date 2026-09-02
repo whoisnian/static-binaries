@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.21
+# syntax=docker.io/docker/dockerfile:1.25
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.23
+ARG ALPINE_VERSION=3.24
 ARG PACKAGE_PATH=main/strace
 ARG PACKAGE_NAME=strace
-ARG PACKAGE_VERSION=6.17
+ARG PACKAGE_VERSION=6.19
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -54,6 +54,9 @@ COPY --from=build /usr/local/bin/strace /
 ENTRYPOINT ["/strace"]
 
 ########## CHANGES ##########
+# 20260901:
+#   * Upgrade strace to 6.19
+#   * Upgrade alpine image to 3.24
 # 20260227:
 #   * Upgrade strace to 6.17
 #   * Upgrade alpine image to 3.23

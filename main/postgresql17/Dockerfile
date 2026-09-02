@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.21
+# syntax=docker.io/docker/dockerfile:1.25
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.23
+ARG ALPINE_VERSION=3.24
 ARG PACKAGE_PATH=main/postgresql17
 ARG PACKAGE_NAME=postgresql17
-ARG PACKAGE_VERSION=17.8
+ARG PACKAGE_VERSION=17.11
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -86,6 +86,9 @@ COPY --from=build /usr/local/bin/psql /usr/local/bin/pg_dump /
 ENTRYPOINT ["/psql"]
 
 ########## CHANGES ##########
+# 20260901:
+#   * Upgrade postgresql17 to 17.11
+#   * Upgrade alpine image to 3.24
 # 20260227:
 #   * Upgrade postgresql17 to 17.8
 #   * Upgrade alpine image to 3.23

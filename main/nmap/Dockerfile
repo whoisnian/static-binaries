@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.21
+# syntax=docker.io/docker/dockerfile:1.25
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.23
+ARG ALPINE_VERSION=3.24
 ARG PACKAGE_PATH=main/nmap
 ARG PACKAGE_NAME=nmap
-ARG PACKAGE_VERSION=7.97
+ARG PACKAGE_VERSION=7.99
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -62,6 +62,9 @@ COPY --from=build /usr/local/bin/nmap /
 ENTRYPOINT ["/nmap"]
 
 ########## CHANGES ##########
+# 20260901:
+#   * Upgrade nmap to 7.99
+#   * Upgrade alpine image to 3.24
 # 20260227:
 #   * Upgrade alpine image to 3.23
 # 20250531:
