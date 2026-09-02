@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.21
+# syntax=docker.io/docker/dockerfile:1.25
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.23
+ARG ALPINE_VERSION=3.24
 ARG PACKAGE_PATH=main/socat
 ARG PACKAGE_NAME=socat
-ARG PACKAGE_VERSION=1.8.0.3
+ARG PACKAGE_VERSION=1.8.1.3
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -56,6 +56,9 @@ COPY --from=build /usr/local/bin/socat /
 ENTRYPOINT ["/socat"]
 
 ########## CHANGES ##########
+# 20260901:
+#   * Upgrade socat to 1.8.1.3
+#   * Upgrade alpine image to 3.24
 # 20260227:
 #   * Upgrade alpine image to 3.23
 # 20250531:

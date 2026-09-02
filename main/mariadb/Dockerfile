@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.21
+# syntax=docker.io/docker/dockerfile:1.25
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.23
+ARG ALPINE_VERSION=3.24
 ARG PACKAGE_PATH=main/mariadb
 ARG PACKAGE_NAME=mariadb
-ARG PACKAGE_VERSION=11.4.9
+ARG PACKAGE_VERSION=11.8.8
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -84,6 +84,9 @@ COPY --from=build /usr/local/bin/mariadb /usr/local/bin/mariadb-dump /
 ENTRYPOINT ["/mariadb"]
 
 ########## CHANGES ##########
+# 20260901:
+#   * Upgrade mariadb to 11.8.8
+#   * Upgrade alpine image to 3.24
 # 20260227:
 #   * Upgrade mariadb to 11.4.9
 #   * Upgrade alpine image to 3.23

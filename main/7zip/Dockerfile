@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.21
+# syntax=docker.io/docker/dockerfile:1.25
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.23
+ARG ALPINE_VERSION=3.24
 ARG PACKAGE_PATH=main/7zip
 ARG PACKAGE_NAME=7zip
-ARG PACKAGE_VERSION=25.01
+ARG PACKAGE_VERSION=26.01
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -55,6 +55,9 @@ COPY --from=build /usr/local/bin/7z /
 ENTRYPOINT ["/7z"]
 
 ########## CHANGES ##########
+# 20260901:
+#   * Upgrade 7zip to 26.01
+#   * Upgrade alpine image to 3.24
 # 20260227:
 #   * Upgrade 7zip to 25.01
 #   * Upgrade alpine image to 3.23

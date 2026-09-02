@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.21
+# syntax=docker.io/docker/dockerfile:1.25
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.23
+ARG ALPINE_VERSION=3.24
 ARG PACKAGE_PATH=main/nano
 ARG PACKAGE_NAME=nano
-ARG PACKAGE_VERSION=8.7
+ARG PACKAGE_VERSION=9.2
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -54,6 +54,9 @@ COPY --from=build /usr/local/bin/nano /
 ENTRYPOINT ["/nano"]
 
 ########## CHANGES ##########
+# 20260901:
+#   * Upgrade nano to 9.2
+#   * Upgrade alpine image to 3.24
 # 20260227:
 #   * Upgrade nano to 8.7
 #   * Upgrade alpine image to 3.23

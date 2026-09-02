@@ -1,10 +1,10 @@
 # syntax=docker.io/docker/dockerfile:1.25
 # https://docs.docker.com/build/dockerfile/frontend/
 
-ARG ALPINE_VERSION=3.23
+ARG ALPINE_VERSION=3.24
 ARG PACKAGE_PATH=main/vim
 ARG PACKAGE_NAME=vim
-ARG PACKAGE_VERSION=9.1.2132
+ARG PACKAGE_VERSION=9.2.1014
 
 FROM docker.io/library/alpine:${ALPINE_VERSION} AS build
 
@@ -60,6 +60,9 @@ COPY --from=build /usr/local/bin/vim /usr/local/bin/xxd /
 ENTRYPOINT ["/vim"]
 
 ########## CHANGES ##########
+# 20260901:
+#   * Upgrade vim to 9.2.1014
+#   * Upgrade alpine image to 3.24
 # 20260227:
 #   * Upgrade vim to 9.1.2132
 #   * Upgrade alpine image to 3.23
