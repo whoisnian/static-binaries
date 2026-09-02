@@ -9,7 +9,7 @@
 
 ########## environment variables ##########
 ENABLE_DEBUG=0
-_BIN_SUFFIX='_v20260301.0_linux_amd64'
+_BIN_SUFFIX='_v20260901.0_linux_amd64'
 REDIS_CONN_OPTS=''    # '-u redis://testpw@127.0.0.1:6379'
 MYSQL_CONN_OPTS=''    # '-h 127.0.0.1 -u root -ptestpw'
 POSTGRES_CONN_OPTS='' # 'postgresql://postgres:testpw@127.0.0.1/postgres'
@@ -38,7 +38,7 @@ if [ -z "$REDIS_CONN_OPTS" ]; then
   REDIS_CONN_OPTS='-u redis://testpw@127.0.0.1:6379'
   REDIS_CONTAINER_ID=$(sudo docker inspect -f '{{.ID}}' redis-sidecar 2>/dev/null)
   if [ -z "$REDIS_CONTAINER_ID" ]; then
-    REDIS_CONTAINER_ID=$(sudo docker run --rm -d --name redis-sidecar -p 6379:6379 redis:8.4.2-alpine --requirepass testpw)
+    REDIS_CONTAINER_ID=$(sudo docker run --rm -d --name redis-sidecar -p 6379:6379 redis:8.8.2-alpine --requirepass testpw)
     for i in {1..10}; do
       if sudo docker exec "$REDIS_CONTAINER_ID" redis-cli $REDIS_CONN_OPTS ping | grep -q 'PONG'; then
         break
@@ -56,7 +56,7 @@ if [ -z "$MYSQL_CONN_OPTS" ]; then
   MYSQL_CONN_OPTS='-h 127.0.0.1 -u root -ptestpw'
   MYSQL_CONTAINER_ID=$(sudo docker inspect -f '{{.ID}}' mysql-sidecar 2>/dev/null)
   if [ -z "$MYSQL_CONTAINER_ID" ]; then
-    MYSQL_CONTAINER_ID=$(sudo docker run --rm -d --name mysql-sidecar -p 3306:3306 -e MYSQL_ROOT_PASSWORD=testpw mysql:8.0.45)
+    MYSQL_CONTAINER_ID=$(sudo docker run --rm -d --name mysql-sidecar -p 3306:3306 -e MYSQL_ROOT_PASSWORD=testpw mysql:8.4.11)
     for i in {1..10}; do
       if sudo docker exec "$MYSQL_CONTAINER_ID" mysqladmin -h localhost -u root -ptestpw ping 2>&1 | grep -q 'mysqld is alive'; then
         break
@@ -74,7 +74,7 @@ if [ -z "$POSTGRES_CONN_OPTS" ]; then
   POSTGRES_CONN_OPTS='postgresql://postgres:testpw@127.0.0.1/postgres'
   POSTGRES_CONTAINER_ID=$(sudo docker inspect -f '{{.ID}}' postgres-sidecar 2>/dev/null)
   if [ -z "$POSTGRES_CONTAINER_ID" ]; then
-    POSTGRES_CONTAINER_ID=$(sudo docker run --rm -d --name postgres-sidecar -p 5432:5432 -e POSTGRES_PASSWORD=testpw postgres:17.9-alpine)
+    POSTGRES_CONTAINER_ID=$(sudo docker run --rm -d --name postgres-sidecar -p 5432:5432 -e POSTGRES_PASSWORD=testpw postgres:17.11-alpine)
     for i in {1..10}; do
       if sudo docker exec "$POSTGRES_CONTAINER_ID" pg_isready | grep -q 'accepting connections'; then
         break
@@ -118,7 +118,7 @@ log_i 'test community/libqrencode success'
 log_i 'test community/redis'
 
 OUTPUT=$(./dist/"redis-cli${_BIN_SUFFIX}" --version)
-assert_grep 'redis-cli 8.4.2' "$OUTPUT"
+assert_grep 'redis-cli 8.8.0' "$OUTPUT"
 
 OUTPUT=$(./dist/"redis-cli${_BIN_SUFFIX}" $REDIS_CONN_OPTS set tkey tvalue)
 assert_grep 'OK' "$OUTPUT"
@@ -127,11 +127,26 @@ assert_grep 'tvalue' "$OUTPUT"
 
 log_i 'test community/redis success'
 
+########## test community/vim ##########
+log_i 'test community/vim'
+
+OUTPUT=$(./dist/"vim${_BIN_SUFFIX}" --version)
+assert_grep 'VIM - Vi IMproved 9.2' "$OUTPUT"
+
+echo 'test_vim' >temp_test_vim.txt
+OUTPUT=$(./dist/"vim${_BIN_SUFFIX}" --not-a-term -u NONE -N +'%s/test/test_s/g' +'wq' temp_test_vim.txt)
+assert_grep 'test_s_vim' "$(cat temp_test_vim.txt)"
+OUTPUT=$(./dist/"xxd${_BIN_SUFFIX}" -ps temp_test_vim.txt)
+assert_grep '746573745f735f76696d0a' "$OUTPUT"
+
+rm -f temp_test_vim.txt
+log_i 'test community/vim success'
+
 ########## test main/7zip ##########
 log_i 'test main/7zip'
 
 OUTPUT=$(./dist/"7z${_BIN_SUFFIX}" --help)
-assert_grep '7-Zip (z) 25.01' "$OUTPUT"
+assert_grep '7-Zip (z) 26.01' "$OUTPUT"
 
 echo 'test_7zip' >temp_test_7zip.txt
 OUTPUT=$(./dist/"7z${_BIN_SUFFIX}" a temp_test_7zip.7z temp_test_7zip.txt)
@@ -150,7 +165,7 @@ log_i 'test main/7zip success'
 log_i 'test main/curl'
 
 OUTPUT=$(./dist/"curl${_BIN_SUFFIX}" --version)
-assert_grep 'curl 8.17.0' "$OUTPUT"
+assert_grep 'curl 8.22.0' "$OUTPUT"
 
 one_time_httpd
 OUTPUT=$(./dist/"curl${_BIN_SUFFIX}" --silent "http://127.0.0.1:$TEMP_HTTP_PORT")
@@ -162,7 +177,7 @@ log_i 'test main/curl success'
 log_i 'test main/htop'
 
 OUTPUT=$(./dist/"htop${_BIN_SUFFIX}" --version)
-assert_grep 'htop 3.4.1' "$OUTPUT"
+assert_grep 'htop 3.5.3' "$OUTPUT"
 
 OUTPUT=$(echo q | ./dist/"htop${_BIN_SUFFIX}" --no-color)
 assert_grep 'Load average' "$OUTPUT"
@@ -173,7 +188,7 @@ log_i 'test main/htop success'
 log_i 'test main/iperf3'
 
 OUTPUT=$(./dist/"iperf3${_BIN_SUFFIX}" --version)
-assert_grep 'iperf 3.19.1' "$OUTPUT"
+assert_grep 'iperf 3.20' "$OUTPUT"
 
 ./dist/"iperf3${_BIN_SUFFIX}" --server --port $TEMP_IPERF3_PORT --daemon --one-off
 sleep 0.5
@@ -186,7 +201,7 @@ log_i 'test main/iperf3 success'
 log_i 'test main/iproute2'
 
 OUTPUT=$(./dist/"ss${_BIN_SUFFIX}" --version)
-assert_grep 'ss utility, iproute2-6.17.0' "$OUTPUT"
+assert_grep 'ss utility, iproute2-7.0.0' "$OUTPUT"
 
 OUTPUT=$(./dist/"ss${_BIN_SUFFIX}" --tcp --listening --numeric --processes)
 assert_grep 'Local Address:Port' "$OUTPUT"
@@ -197,7 +212,7 @@ log_i 'test main/iproute2 success'
 log_i 'test main/lsof'
 
 OUTPUT=$(./dist/"lsof${_BIN_SUFFIX}" -v 2>&1)
-assert_grep 'revision: 4.99.5' "$OUTPUT"
+assert_grep 'revision: 4.99.6' "$OUTPUT"
 
 OUTPUT=$(./dist/"lsof${_BIN_SUFFIX}" -p "$$")
 assert_grep 'test.sh' "$OUTPUT"
@@ -208,9 +223,9 @@ log_i 'test main/lsof success'
 log_i 'test main/mariadb'
 
 OUTPUT=$(./dist/"mariadb${_BIN_SUFFIX}" --version)
-assert_grep 'from 11.4.9-MariaDB' "$OUTPUT"
+assert_grep 'from 11.8.8-MariaDB' "$OUTPUT"
 OUTPUT=$(./dist/"mariadb-dump${_BIN_SUFFIX}" --version)
-assert_grep 'from 11.4.9-MariaDB' "$OUTPUT"
+assert_grep 'from 11.8.8-MariaDB' "$OUTPUT"
 
 OUTPUT=$(./dist/"mariadb${_BIN_SUFFIX}" $MYSQL_CONN_OPTS --disable-ssl-verify-server-cert -e 'select User from mysql.user')
 assert_grep 'mysql.infoschema' "$OUTPUT"
@@ -226,7 +241,7 @@ log_i 'test main/mariadb success'
 log_i 'test main/nano'
 
 OUTPUT=$(./dist/"nano${_BIN_SUFFIX}" --version)
-assert_grep 'GNU nano, version 8.7' "$OUTPUT"
+assert_grep 'GNU nano, version 9.2' "$OUTPUT"
 
 echo -e 'Press Ctrl+K then Ctrl+X.\nthis line will be deleted\nthis line will be kept' >temp_test_nano.txt
 ./dist/"nano${_BIN_SUFFIX}" --ignorercfiles --saveonexit +2 temp_test_nano.txt
@@ -253,7 +268,7 @@ log_i 'test main/netcat-openbsd success'
 log_i 'test main/nmap'
 
 OUTPUT=$(./dist/"nmap${_BIN_SUFFIX}" -V)
-assert_grep 'Nmap version 7.97' "$OUTPUT"
+assert_grep 'Nmap version 7.99' "$OUTPUT"
 
 OUTPUT=$(./dist/"nmap${_BIN_SUFFIX}" 127.0.0.1)
 assert_grep 'Nmap done: 1 IP address (1 host up) scanned' "$OUTPUT"
@@ -277,9 +292,9 @@ log_i 'test main/pigz success'
 log_i 'test main/postgresql17'
 
 OUTPUT=$(./dist/"psql${_BIN_SUFFIX}" --version)
-assert_grep 'psql (PostgreSQL) 17.8' "$OUTPUT"
+assert_grep 'psql (PostgreSQL) 17.11' "$OUTPUT"
 OUTPUT=$(./dist/"pg_dump${_BIN_SUFFIX}" --version)
-assert_grep 'pg_dump (PostgreSQL) 17.8' "$OUTPUT"
+assert_grep 'pg_dump (PostgreSQL) 17.11' "$OUTPUT"
 
 OUTPUT=$(./dist/"psql${_BIN_SUFFIX}" $POSTGRES_CONN_OPTS -c "select table_name from information_schema.tables where table_schema='information_schema'")
 assert_grep 'information_schema_catalog_name' "$OUTPUT"
@@ -292,7 +307,7 @@ log_i 'test main/postgresql17 success'
 log_i 'test main/procps-ng'
 
 OUTPUT=$(./dist/"ps${_BIN_SUFFIX}" --version)
-assert_grep 'procps-ng 4.0.5' "$OUTPUT"
+assert_grep 'procps-ng 4.0.6' "$OUTPUT"
 
 OUTPUT=$(./dist/"ps${_BIN_SUFFIX}" aux)
 assert_grep 'test.sh' "$OUTPUT"
@@ -303,7 +318,7 @@ log_i 'test main/procps-ng success'
 log_i 'test main/rsync'
 
 OUTPUT=$(./dist/"rsync${_BIN_SUFFIX}" --version)
-assert_grep 'version 3.4.1' "$OUTPUT"
+assert_grep 'version 3.5.0' "$OUTPUT"
 
 echo 'rsync_test' >temp_test_rsync_from.txt
 OUTPUT=$(./dist/"rsync${_BIN_SUFFIX}" -avz temp_test_rsync_from.txt temp_test_rsync_to.txt)
@@ -317,7 +332,7 @@ log_i 'test main/rsync success'
 log_i 'test main/socat'
 
 OUTPUT=$(./dist/"socat${_BIN_SUFFIX}" -V)
-assert_grep 'socat version 1.8.0.3' "$OUTPUT"
+assert_grep 'socat version 1.8.1.3' "$OUTPUT"
 
 one_time_httpd
 ./dist/"socat${_BIN_SUFFIX}" "TCP-LISTEN:$TEMP_SOCAT_PORT" "TCP4:127.0.0.1:$TEMP_HTTP_PORT" &
@@ -331,7 +346,7 @@ log_i 'test main/socat success'
 log_i 'test main/strace'
 
 OUTPUT=$(./dist/"strace${_BIN_SUFFIX}" --version)
-assert_grep 'strace -- version 6.17' "$OUTPUT"
+assert_grep 'strace -- version 6.19' "$OUTPUT"
 
 OUTPUT=$(./dist/"strace${_BIN_SUFFIX}" -o temp_test_strace.txt cat /dev/null)
 OUTPUT=$(cat temp_test_strace.txt)
@@ -346,7 +361,7 @@ log_i 'test main/strace success'
 log_i 'test main/tcpdump'
 
 OUTPUT=$(./dist/"tcpdump${_BIN_SUFFIX}" --version)
-assert_grep 'version 4.99.5' "$OUTPUT"
+assert_grep 'version 4.99.6' "$OUTPUT"
 
 one_time_httpd
 sudo ./dist/"tcpdump${_BIN_SUFFIX}" --interface lo -A -n -c 4 "tcp src port $TEMP_HTTP_PORT" 2>/dev/null 1>temp_test_tcpdump.data &
@@ -358,21 +373,6 @@ assert_grep 'one_time_httpd' "$(cat temp_test_tcpdump.data)"
 
 rm -f temp_test_tcpdump.data
 log_i 'test main/tcpdump success'
-
-########## test main/vim ##########
-log_i 'test main/vim'
-
-OUTPUT=$(./dist/"vim${_BIN_SUFFIX}" --version)
-assert_grep 'VIM - Vi IMproved 9.1' "$OUTPUT"
-
-echo 'test_vim' >temp_test_vim.txt
-OUTPUT=$(./dist/"vim${_BIN_SUFFIX}" --not-a-term -u NONE -N +'%s/test/test_s/g' +'wq' temp_test_vim.txt)
-assert_grep 'test_s_vim' "$(cat temp_test_vim.txt)"
-OUTPUT=$(./dist/"xxd${_BIN_SUFFIX}" -ps temp_test_vim.txt)
-assert_grep '746573745f735f76696d0a' "$OUTPUT"
-
-rm -f temp_test_vim.txt
-log_i 'test main/vim success'
 
 ########## test main/wget ##########
 log_i 'test main/wget'
@@ -408,9 +408,9 @@ log_i 'test custom/mysql80 success'
 log_i 'test custom/mysql84'
 
 OUTPUT=$(./dist/"mysql84${_BIN_SUFFIX}" --version)
-assert_grep 'Ver 8.4.8' "$OUTPUT"
+assert_grep 'Ver 8.4.10' "$OUTPUT"
 OUTPUT=$(./dist/"mysqldump84${_BIN_SUFFIX}" --version)
-assert_grep 'Ver 8.4.8' "$OUTPUT"
+assert_grep 'Ver 8.4.10' "$OUTPUT"
 
 OUTPUT=$(./dist/"mysql84${_BIN_SUFFIX}" $MYSQL_CONN_OPTS -e 'select User from mysql.user')
 assert_grep 'mysql.infoschema' "$OUTPUT"
