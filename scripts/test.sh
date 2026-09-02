@@ -10,9 +10,9 @@
 ########## environment variables ##########
 ENABLE_DEBUG=0
 _BIN_SUFFIX='_v20260901.0_linux_amd64'
-REDIS_CONN_OPTS=''    # '-u redis://testpw@127.0.0.1:6379'
-MYSQL_CONN_OPTS=''    # '-h 127.0.0.1 -u root -ptestpw'
-POSTGRES_CONN_OPTS='' # 'postgresql://postgres:testpw@127.0.0.1/postgres'
+REDIS_CONN_OPTS='-u redis://testpw@10.0.3.201:6379'
+MYSQL_CONN_OPTS='-h 10.0.3.201 -u root -ptestpw'
+POSTGRES_CONN_OPTS='postgresql://postgres:testpw@10.0.3.201/postgres'
 TEMP_HTTP_PORT=18080
 TEMP_IPERF3_PORT=$(($TEMP_HTTP_PORT + 1))
 TEMP_SOCAT_PORT=$(($TEMP_HTTP_PORT + 2))
