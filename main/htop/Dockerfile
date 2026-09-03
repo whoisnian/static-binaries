@@ -25,12 +25,15 @@ RUN --mount=type=cache,target=/var/cache/apk,id=apk-$TARGETARCH,sharing=locked \
 #   so:libc.musl-x86_64.so.1
 #   so:libncursesw.so.6 => libncursesw.a provided by ncurses-static
 ARG EXTRA_DEPS="ncurses-static"
+ARG EDGE_DEPS="ncurses-static=6.6_p20260822-r0"
+ARG EDGE_REPOSITORY=https://dl-cdn.alpinelinux.org/alpine/edge/main
 
 # STEP-1: install dependencies
 COPY aports "${PACKAGE_PATH}"
 RUN --mount=type=cache,target=/var/cache/apk,id=apk-$TARGETARCH,sharing=locked \
   cd "${PACKAGE_PATH}" && grep -q "pkgver=${PACKAGE_VERSION}" APKBUILD && echo 'pkgver matched' && \
-  abuild -F deps && apk add ${EXTRA_DEPS}
+  abuild -F deps && apk add ${EXTRA_DEPS} && \
+  apk add --repository "${EDGE_REPOSITORY}" ${EDGE_DEPS}
 
 # STEP-2: build executable
 RUN --mount=type=cache,target=/var/cache/distfiles <<EOT
