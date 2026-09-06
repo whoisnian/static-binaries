@@ -8,7 +8,7 @@
 #########################################################################
 
 ########## environment variables ##########
-ALPINE_VERSION="3.23"
+ALPINE_VERSION="3.24"
 SCRIPT_DIR=$(dirname "$0")
 SOURCE_DIR="$SCRIPT_DIR/.."
 
@@ -21,6 +21,7 @@ declare -a BINARIES=(
   "fio|community/fio|https://pkgs.alpinelinux.org/package/edge/community/x86_64/fio"
   "qrencode|community/libqrencode|https://pkgs.alpinelinux.org/package/edge/community/x86_64/libqrencode-tools"
   "redis-cli|community/redis|https://pkgs.alpinelinux.org/package/edge/community/x86_64/redis"
+  "vim|community/vim|https://pkgs.alpinelinux.org/package/edge/community/x86_64/vim"
   "7z|main/7zip|https://pkgs.alpinelinux.org/package/edge/main/x86_64/7zip"
   "curl|main/curl|https://pkgs.alpinelinux.org/package/edge/main/x86_64/curl"
   "htop|main/htop|https://pkgs.alpinelinux.org/package/edge/main/x86_64/htop"
@@ -40,7 +41,6 @@ declare -a BINARIES=(
   "socat|main/socat|https://pkgs.alpinelinux.org/package/edge/main/x86_64/socat"
   "strace|main/strace|https://pkgs.alpinelinux.org/package/edge/main/x86_64/strace"
   "tcpdump|main/tcpdump|https://pkgs.alpinelinux.org/package/edge/main/x86_64/tcpdump"
-  "vim|main/vim|https://pkgs.alpinelinux.org/package/edge/main/x86_64/vim"
   "xxd|main/vim|https://pkgs.alpinelinux.org/package/edge/main/x86_64/xxd"
   "wget|main/wget|https://pkgs.alpinelinux.org/package/edge/main/x86_64/wget"
   "mysql80|custom/mysql80|https://aur.archlinux.org/packages/mysql80"
